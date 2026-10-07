@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Database (auto-created at runtime)
+*.db
+
+# Uploaded/Annotated images (auto-generated at runtime)
+uploads/*
+annotated/*
+!uploads/.gitkeep
+!annotated/.gitkeep
+
+# Sample test images
+sample_flood_image*.jpg
+high_flood_scene.jpg
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

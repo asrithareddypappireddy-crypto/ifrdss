@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IFRDSS — Intelligent Flood Rescue Decision Support System</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>IFRDSS</h1>
+    <p>Intelligent Flood Rescue Decision Support System</p>
+  </header>
+
+  <main class="container">
+    <section class="upload-panel">
+      <h2>1. Upload a Flood-Scene Image</h2>
+      <form id="upload-form">
+        <input type="file" id="file-input" accept=".jpg,.jpeg,.png" required />
+        <button type="submit">Analyze Image</button>
+      </form>
+      <p id="status-msg"></p>
+    </section>
+
+    <section class="result-panel" id="result-panel" hidden>
+      <h2>2. Detection &amp; Decision Support Result</h2>
+      <div class="result-grid">
+        <div class="image-box">
+          <h3>Annotated Image</h3>
+          <img id="result-image" alt="Annotated result" />
+        </div>
+        <div class="info-box">
+          <div class="badge" id="risk-badge">Risk: --</div>
+          <table class="result-table">
+            <tr><td>Rescue Priority</td><td id="res-priority">--</td></tr>
+            <tr><td>People Detected</td><td id="res-people">--</td></tr>
+            <tr><td>Flood Water Coverage</td><td id="res-flood">--</td></tr>
+            <tr><td>Damage Indicator</td><td id="res-damage">--</td></tr>
+            <tr><td>Suggested Response</td><td id="res-response">--</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="rescue-plan-box" id="rescue-plan-box">
+        <h3>🚁 Actionable Rescue Protocol &amp; Tactical Execution Plan</h3>
+        <div class="rescue-plan-grid">
+          <div class="plan-card">
+            <h4>Primary Asset &amp; Vessel</h4>
+            <p id="plan-asset">--</p>
+          </div>
+          <div class="plan-card">
+            <h4>Tactical Extraction Method</h4>
+            <p id="plan-method">--</p>
+          </div>
+          <div class="plan-card">
+            <h4>Required Responders</h4>
+            <ul id="plan-personnel"></ul>
+          </div>
+          <div class="plan-card">
+            <h4>Safety Gear &amp; Checklist</h4>
+            <ul id="plan-equipment"></ul>
+          </div>
+        </div>
+        <div class="plan-steps-container">
+          <h4>Step-by-Step Tactical Field Execution Plan</h4>
+          <ol id="plan-steps"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="history-panel">
+      <h2>3. Submission History</h2>
+      <div class="history-controls">
+        <label>Sort by:
+          <select id="sort-select">
+            <option value="timestamp">Newest first</option>
+            <option value="rescue_priority">Rescue Priority (high → low)</option>
+            <option value="risk_level">Risk Level</option>
+            <option value="person_count">People Detected</option>
+          </select>
+        </label>
+        <button id="refresh-btn">Refresh</button>
+      </div>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Thumbnail</th><th>Risk</th><th>Priority</th>
+            <th>People</th><th>Flood %</th><th>Suggested Response</th><th>Time (UTC)</th>
+          </tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>Individual Software Engineering Project &mdash; IFRDSS Prototype Dashboard</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1608 @@
+{
+  "_type": "Project",
+  "_id": "c346908cee3747cfa0ad5cd3",
+  "name": "Intelligent Flood Rescue Decision Support System (IFRDSS)",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "d428d3853636419693dde7ac",
+      "_parent": {
+        "$ref": "c346908cee3747cfa0ad5cd3"
+      },
+      "name": "IFRDSS System Models",
+      "ownedElements": [
+        {
+          "_type": "UMLClass",
+          "_id": "a2435fda59834695b03f6362",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "FloodSensor",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "5d38282dcb1c43048508b475",
+              "name": "+ sensorID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "7017523560a24539b990d835",
+              "name": "+ location: GeoLocation"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "071851ffca6e417e8b5e552e",
+              "name": "+ currentWaterLevel: Double"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "02928d4f105446a3b9ed3348",
+              "name": "+ rainfallRate: Double"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "05a42f252b9845ed941fb190",
+              "name": "+ status: SensorStatus"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "ea84f9e8c551463fa9a80012",
+              "name": "+ readTelemetry(): SensorData"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "58f94f525f46467f8a0af146",
+              "name": "+ calibrate(): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "2ff9f15ca8c7427d86d740c5",
+              "name": "+ sendAlertIfThresholdExceeded(): void"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "a177f41fe3db46c3bebc0cf7",
+              "_parent": {
+                "$ref": "a2435fda59834695b03f6362"
+              },
+              "name": "feeds telemetry to",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "239830f2b318431285eaebb7",
+                "_parent": {
+                  "$ref": "a177f41fe3db46c3bebc0cf7"
+                },
+                "reference": {
+                  "$ref": "a2435fda59834695b03f6362"
+                },
+                "multiplicity": "1..*"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "502a03ceae984a3fb0b0f677",
+                "_parent": {
+                  "$ref": "a177f41fe3db46c3bebc0cf7"
+                },
+                "reference": {
+                  "$ref": "41de709e66244b689c6bbd34"
+                },
+                "multiplicity": "1"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "544a22c7e6c54e3ea870ae2e",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "SOSRequest",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "7878e167bbdf4c7fb17ca163",
+              "name": "+ requestID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "c73f0a30d4c54700bdec472c",
+              "name": "+ victimID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "0266a4ef77694907a9e1b6b1",
+              "name": "+ location: GeoLocation"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "6be1ea4e4b1849e8b1b33bde",
+              "name": "+ urgencyLevel: UrgencyScore"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "f64132a3fc874a639917b032",
+              "name": "+ victimCount: Int"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "1986c43be04f4826a4f9a01c",
+              "name": "+ timestamp: DateTime"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "01ef399934e443e3b30a7716",
+              "name": "+ status: RequestStatus"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "12acae6fb5424575bf942d54",
+              "name": "+ calculateInitialUrgency(): UrgencyScore"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "c9b4fe6e7fa341e8bf270faa",
+              "name": "+ updateStatus(status: RequestStatus): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "fef00647e4934a4dbb5680b3",
+              "name": "+ broadcastToRescueTeams(): void"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "8fa59cd57dd542f2b2c03562",
+              "_parent": {
+                "$ref": "544a22c7e6c54e3ea870ae2e"
+              },
+              "name": "queued in",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "fe59c6c5335c4995baedc960",
+                "_parent": {
+                  "$ref": "8fa59cd57dd542f2b2c03562"
+                },
+                "reference": {
+                  "$ref": "544a22c7e6c54e3ea870ae2e"
+                },
+                "multiplicity": "1..*"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "90a88bd27ed846178e2ea198",
+                "_parent": {
+                  "$ref": "8fa59cd57dd542f2b2c03562"
+                },
+                "reference": {
+                  "$ref": "4153cc100c664b62b66ee47b"
+                },
+                "multiplicity": "1"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "c0112945ac414a57825ca928",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Victim",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "2151d69912914827946c07ad",
+              "name": "+ victimID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "c5a139b488424eef85f46184",
+              "name": "+ name: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "d5ac45d221a040b8a53c247a",
+              "name": "+ contactNo: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "3ce04e314bb24a4983929719",
+              "name": "+ medicalCondition: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "4fac0b4b5dd44718a74285d7",
+              "name": "+ specialNeeds: List<String>"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "2535298465094d7e9bfb963f",
+              "name": "+ submitSOS(loc: GeoLocation): SOSRequest"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "133776799a20411e8f3f809c",
+              "name": "+ updateLocation(loc: GeoLocation): void"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "f23a9451c9534f359f2721b2",
+              "_parent": {
+                "$ref": "c0112945ac414a57825ca928"
+              },
+              "name": "creates",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "a9a410385e7147bda884da21",
+                "_parent": {
+                  "$ref": "f23a9451c9534f359f2721b2"
+                },
+                "reference": {
+                  "$ref": "c0112945ac414a57825ca928"
+                },
+                "multiplicity": "1"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "44ee317b903847afbc77a31e",
+                "_parent": {
+                  "$ref": "f23a9451c9534f359f2721b2"
+                },
+                "reference": {
+                  "$ref": "544a22c7e6c54e3ea870ae2e"
+                },
+                "multiplicity": "0..*"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "41de709e66244b689c6bbd34",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "RiskAssessmentEngine",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "d4c0e1b30da142a19e5641cc",
+              "name": "+ modelVersion: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "4d4d33397f314efaacad18e7",
+              "name": "+ dangerThreshold: Double"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "8aaa9978e0fb4428a94c3596",
+              "name": "+ hydrologicalMap: GISData"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "87c8e49c32264c74b8164e01",
+              "name": "+ evaluateFloodRisk(sensorData: List<SensorData>): FloodRiskMap"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "35cd14b0824842d8ab93070b",
+              "name": "+ predictInundationArea(hours: Int): Polygon"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "125a5f23d0d845acac7f6740",
+              "name": "+ generateEvacuationZone(): List<Zone>"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "8dca9ad9e3bd43979dd935c3",
+              "_parent": {
+                "$ref": "41de709e66244b689c6bbd34"
+              },
+              "name": "provides risk map to",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "44d0b0530c0649c190bf1c14",
+                "_parent": {
+                  "$ref": "8dca9ad9e3bd43979dd935c3"
+                },
+                "reference": {
+                  "$ref": "41de709e66244b689c6bbd34"
+                },
+                "multiplicity": "1"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "2fc15abe8730498dbe1e3a65",
+                "_parent": {
+                  "$ref": "8dca9ad9e3bd43979dd935c3"
+                },
+                "reference": {
+                  "$ref": "4153cc100c664b62b66ee47b"
+                },
+                "multiplicity": "1"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "4153cc100c664b62b66ee47b",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "DecisionSupportEngine",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "b0251127e42245e28c8f9687",
+              "name": "+ engineID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "57236db3b35549c19c42e3c7",
+              "name": "+ activeMissions: List<RescueMission>"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "191f92565802453b836f0a7c",
+              "name": "+ pendingSOSQueue: PriorityQueue"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "6d191050087444a58c5d1603",
+              "name": "+ prioritizeSOSRequests(): List<SOSRequest>"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "eee25c9eaa1144f4907b53a7",
+              "name": "+ recommendResourceAllocation(): AllocationPlan"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "f05f6d0b4b9e4f568499d491",
+              "name": "+ triggerAutomatedDispatch(): Mission"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "f220e296eb9f4e9c8d384418",
+              "_parent": {
+                "$ref": "4153cc100c664b62b66ee47b"
+              },
+              "name": "uses for navigation",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "ce6fb84d8b5445e7bdf95e80",
+                "_parent": {
+                  "$ref": "f220e296eb9f4e9c8d384418"
+                },
+                "reference": {
+                  "$ref": "4153cc100c664b62b66ee47b"
+                },
+                "multiplicity": "1"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "37d9fa8bbc3741c69d8ed1b2",
+                "_parent": {
+                  "$ref": "f220e296eb9f4e9c8d384418"
+                },
+                "reference": {
+                  "$ref": "ca0440a6874f4abaa7a782fe"
+                },
+                "multiplicity": "1"
+              }
+            },
+            {
+              "_type": "UMLAssociation",
+              "_id": "18467c1916a54b77b8f31909",
+              "_parent": {
+                "$ref": "4153cc100c664b62b66ee47b"
+              },
+              "name": "generates",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "05fac82921a541fd9316ab89",
+                "_parent": {
+                  "$ref": "18467c1916a54b77b8f31909"
+                },
+                "reference": {
+                  "$ref": "4153cc100c664b62b66ee47b"
+                },
+                "multiplicity": "1"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "8b5e5eb7cdc54748a8f24ed3",
+                "_parent": {
+                  "$ref": "18467c1916a54b77b8f31909"
+                },
+                "reference": {
+                  "$ref": "a7ae172508ab4e36a2b4cf55"
+                },
+                "multiplicity": "0..*"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "ca0440a6874f4abaa7a782fe",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "RouteOptimizer",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "0ceff16df26945dabca43a6c",
+              "name": "+ algorithmType: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "33e15cb595d545e990583648",
+              "name": "+ roadNetworkGraph: Graph"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "c08fde3d00944c7d8aa63012",
+              "name": "+ computeSafeRoute(start: GeoLocation, end: GeoLocation, floodMap: FloodRiskMap): Route"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "e74fb4ba0fb3478da860e439",
+              "name": "+ recomputeDynamicPath(): Route"
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "7f64ff91702b4582917b2f38",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "RescueTeam",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "41da852edab34363a5134044",
+              "name": "+ teamID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "41aa007481044775a7f5bc33",
+              "name": "+ teamType: TeamType"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "d4111b04e3c7419da2adb1e5",
+              "name": "+ capacity: Int"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "4f123280edf94fc0a19e66ff",
+              "name": "+ currentLocation: GeoLocation"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "73d332e755ae41299100cc8c",
+              "name": "+ status: TeamStatus"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "2fe611410aae405bac93c076",
+              "name": "+ acceptMission(m: RescueMission): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "692ad72aa3ac4ca9894ded4f",
+              "name": "+ updateLocation(loc: GeoLocation): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "a16dc3ea5ca241b18b68a6b7",
+              "name": "+ reportMissionComplete(): void"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "a153dc1321ac4891864ee03f",
+              "_parent": {
+                "$ref": "7f64ff91702b4582917b2f38"
+              },
+              "name": "assigned to",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "e2a9a894757a4afeb4823065",
+                "_parent": {
+                  "$ref": "a153dc1321ac4891864ee03f"
+                },
+                "reference": {
+                  "$ref": "7f64ff91702b4582917b2f38"
+                },
+                "multiplicity": "1"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "c0011b46cf774fb69e69c6e9",
+                "_parent": {
+                  "$ref": "a153dc1321ac4891864ee03f"
+                },
+                "reference": {
+                  "$ref": "a7ae172508ab4e36a2b4cf55"
+                },
+                "multiplicity": "0..*"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "a7ae172508ab4e36a2b4cf55",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "RescueMission",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "c0f3a2c6c15f4cd9ab50ac86",
+              "name": "+ missionID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "5b8423e5d8a9424f9b0fc9f3",
+              "name": "+ targetSOS: SOSRequest"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "83ba698d4c3e4654af30868c",
+              "name": "+ assignedTeam: RescueTeam"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "223111da31b148e4acc9286d",
+              "name": "+ assignedRoute: Route"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "e41e166fffad4297891e0772",
+              "name": "+ status: MissionStatus"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "ba7796e526b148dab4011c9f",
+              "name": "+ dispatch(): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "4546ba055b624661bdbe476c",
+              "name": "+ cancelMission(reason: String): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "cff225ac4c584684bb9073d1",
+              "name": "+ markCompleted(): void"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "633f2a96e837479ca60b4d24",
+              "_parent": {
+                "$ref": "a7ae172508ab4e36a2b4cf55"
+              },
+              "name": "transports victims to",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "c09f81d742f84a5f92e1cba0",
+                "_parent": {
+                  "$ref": "633f2a96e837479ca60b4d24"
+                },
+                "reference": {
+                  "$ref": "a7ae172508ab4e36a2b4cf55"
+                },
+                "multiplicity": "0..*"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "74ffc7a9c7e44f4abe91c1c8",
+                "_parent": {
+                  "$ref": "633f2a96e837479ca60b4d24"
+                },
+                "reference": {
+                  "$ref": "e9e3023e9d9b45b0a5ec7d06"
+                },
+                "multiplicity": "1"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "e9e3023e9d9b45b0a5ec7d06",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Shelter",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "70e10d28fd6c47e4865c4082",
+              "name": "+ shelterID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "4e3ccc41c52242a3b3f3eb43",
+              "name": "+ name: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "a11103ee99b942369c224123",
+              "name": "+ location: GeoLocation"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "6d18a1155bfb4236b47b8268",
+              "name": "+ maxCapacity: Int"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "7d4804c80d1d4a79b2f6e0b5",
+              "name": "+ currentOccupancy: Int"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "0c817c0269c24e0b95ec7be3",
+              "name": "+ availableMedicalSupplies: Int"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "3412eb24e08e4bb38488917d",
+              "name": "+ admitEvacuees(count: Int): Boolean"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "8a55c958122140408290b588",
+              "name": "+ getRemainingCapacity(): Int"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "ebae3304a01945289ff53dad",
+              "name": "+ requestSupplies(): void"
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "19d7d387fdaa462a862bf006",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "CommandDashboard",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "_id": "64deeb0216af421c98101407",
+              "name": "+ commanderID: String"
+            },
+            {
+              "_type": "UMLAttribute",
+              "_id": "cf593c73f736482bb8b4401a",
+              "name": "+ liveMapLayer: GISLayer"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "_id": "1a14a75430734f429da0388b",
+              "name": "+ viewLiveFloodMap(): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "312c7fc89452452b8d81c0df",
+              "name": "+ overrideAIRecommendation(plan: AllocationPlan): void"
+            },
+            {
+              "_type": "UMLOperation",
+              "_id": "f2aef01444dc4354a9d6d594",
+              "name": "+ issueRegionalEvacuationNotice(): void"
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLAssociation",
+              "_id": "b85725b085974b0c9cf2ca93",
+              "_parent": {
+                "$ref": "19d7d387fdaa462a862bf006"
+              },
+              "name": "monitors & overrides",
+              "end1": {
+                "_type": "UMLAssociationEnd",
+                "_id": "dad90745cbea4759b27b617e",
+                "_parent": {
+                  "$ref": "b85725b085974b0c9cf2ca93"
+                },
+                "reference": {
+                  "$ref": "19d7d387fdaa462a862bf006"
+                },
+                "multiplicity": "1"
+              },
+              "end2": {
+                "_type": "UMLAssociationEnd",
+                "_id": "493a1b665ae44ee7a498f466",
+                "_parent": {
+                  "$ref": "b85725b085974b0c9cf2ca93"
+                },
+                "reference": {
+                  "$ref": "4153cc100c664b62b66ee47b"
+                },
+                "multiplicity": "1"
+              }
+            }
+          ]
+        },
+        {
+          "_type": "UMLInteraction",
+          "_id": "cecf86e359fa4a8bbcd9c953",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "High Urgency SOS Rescue Workflow",
+          "lifelines": [
+            {
+              "_type": "UMLLifeline",
+              "_id": "76ed6cf6006e4240a67e5ccc",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Citizen / Victim (VictimUI)"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "4fc658ed6bba41bcad97d224",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "API Gateway (Gateway)"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "334aa15e81de42c6ac4e7b63",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Decision Support Engine (DecisionSupportEngine)"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "007b7ab772234de6be6f5a8e",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Risk Assessment Engine (RiskAssessmentEngine)"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "44a30b27592546a9baec9e62",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Route Optimizer (RouteOptimizer)"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "f4c904775c1447cc9dca551a",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Field Rescue Team App (RescueTeamApp)"
+            },
+            {
+              "_type": "UMLLifeline",
+              "_id": "a0cdfb0fe0bc49adbbeafc71",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Incident Commander (CommandDashboard)"
+            }
+          ],
+          "messages": [
+            {
+              "_type": "UMLMessage",
+              "_id": "62b19929051f4ca4ab0f1c41",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "1: sendSOS(location, victimCount, medicalNeeds)",
+              "source": {
+                "$ref": "76ed6cf6006e4240a67e5ccc"
+              },
+              "target": {
+                "$ref": "4fc658ed6bba41bcad97d224"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "5d5a34975e1c4c4b9b3ad66f",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "2: getRealtimeFloodRisk(location)",
+              "source": {
+                "$ref": "4fc658ed6bba41bcad97d224"
+              },
+              "target": {
+                "$ref": "007b7ab772234de6be6f5a8e"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "9612b42abcb9469d8ed90486",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "3: return RiskScore & InundationLevel",
+              "source": {
+                "$ref": "007b7ab772234de6be6f5a8e"
+              },
+              "target": {
+                "$ref": "4fc658ed6bba41bcad97d224"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "ed4a3229c6a84aabb8982bcd",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "4: processEmergencyAlert(SOSRequest)",
+              "source": {
+                "$ref": "4fc658ed6bba41bcad97d224"
+              },
+              "target": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "3f16c1cddab14993b652835f",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "5: calculateOptimalSafeRoute(startLoc, targetSOS, shelterLoc)",
+              "source": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              },
+              "target": {
+                "$ref": "44a30b27592546a9baec9e62"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "bd58f52370524f3f9e0e725a",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "6: return SafeRoute & EstimatedTime",
+              "source": {
+                "$ref": "44a30b27592546a9baec9e62"
+              },
+              "target": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "6bce82ca15584fbc85d5135d",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "7: proposeMissionDispatch(MissionDetails)",
+              "source": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              },
+              "target": {
+                "$ref": "a0cdfb0fe0bc49adbbeafc71"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "d1436c13db7c40b3a5e82aa3",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "8: approveDispatch(missionID)",
+              "source": {
+                "$ref": "a0cdfb0fe0bc49adbbeafc71"
+              },
+              "target": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "0343ac2559dd44eebd7eddeb",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "9: dispatchMission(MissionData, SafeRoute)",
+              "source": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              },
+              "target": {
+                "$ref": "f4c904775c1447cc9dca551a"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "ea8bc3840b4447dd8f49c61d",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "10: sendNotification('Rescue team dispatched, ETA: 15 mins')",
+              "source": {
+                "$ref": "f4c904775c1447cc9dca551a"
+              },
+              "target": {
+                "$ref": "76ed6cf6006e4240a67e5ccc"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "032132c337d74ebaa838ed0c",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "11: updateMissionStatus('Victims Rescued & En-route to Shelter')",
+              "source": {
+                "$ref": "f4c904775c1447cc9dca551a"
+              },
+              "target": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              }
+            },
+            {
+              "_type": "UMLMessage",
+              "_id": "f58221527ca84035813eebea",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "12: markMissionCompleted()",
+              "source": {
+                "$ref": "f4c904775c1447cc9dca551a"
+              },
+              "target": {
+                "$ref": "334aa15e81de42c6ac4e7b63"
+              }
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLSequenceDiagram",
+              "_id": "7ef88a143f984da8a96fe74c",
+              "_parent": {
+                "$ref": "cecf86e359fa4a8bbcd9c953"
+              },
+              "name": "Sequence Diagram - SOS & Dispatch Workflow"
+            }
+          ]
+        },
+        {
+          "_type": "UMLActivity",
+          "_id": "ef7a14372e0a43c0abc73822",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Flood Rescue Decision Process",
+          "nodes": [
+            {
+              "_type": "UMLInitialNode",
+              "_id": "07018102455b4dc5bcaed8e6",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Start Flood Alert / SOS Trigger"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "252bfc5cf8d54f52b65716ac",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Ingest Sensor Telemetry & SOS Alert"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "27422d4c0fd044eab9d071e2",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Assess Flood Risk & Compute Inundation Vector"
+            },
+            {
+              "_type": "UMLDecisionNode",
+              "_id": "fb200f00f69b4213b5614d3b",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Is Danger Level High?"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "9f969da1dbb641b5b38b058c",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Issue Low Risk Warning & Monitor"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "71d13a4e3fd04ba4a23f66dc",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Prioritize SOS Requests by Medical & Risk Urgency"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "3fd198bd56714890a5001a9b",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Execute Genetic/Dijkstra Resource & Route Optimization"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "9665e6b5f52948c599a91637",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Present Rescue Plan on Command Dashboard"
+            },
+            {
+              "_type": "UMLDecisionNode",
+              "_id": "c9e2dcc9257c477aa24e7bac",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Commander Approves Plan?"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "248dfba4721c4fa1b1005597",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Adjust Dispatch Parameters Manually"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "4f74967773504537b85a041f",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Dispatch Rescue Team & Push Safe Navigation Route"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "d175719b4cdc458aaab28304",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Execute Field Rescue & Update Live Telemetry"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "50e438db0c104051815373dd",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Safe Evacuation & Transport to Designated Shelter"
+            },
+            {
+              "_type": "UMLAction",
+              "_id": "7b0f8e16dd424b36862dad88",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Update Shelter Capacity & Close Rescue Mission"
+            },
+            {
+              "_type": "UMLActivityFinalNode",
+              "_id": "8591f1e0ffaf4f5caa2c4d07",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "End Rescue Cycle"
+            }
+          ],
+          "edges": [
+            {
+              "_type": "UMLControlFlow",
+              "_id": "8ca977f7c7234f7898368e6a",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "07018102455b4dc5bcaed8e6"
+              },
+              "target": {
+                "$ref": "252bfc5cf8d54f52b65716ac"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "93ec528023ba408dab83a7d0",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "252bfc5cf8d54f52b65716ac"
+              },
+              "target": {
+                "$ref": "27422d4c0fd044eab9d071e2"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "466b79afe2b743b6a3551cfe",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "27422d4c0fd044eab9d071e2"
+              },
+              "target": {
+                "$ref": "fb200f00f69b4213b5614d3b"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "9f53cfcdfeb24254851b3875",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "[No / Low Danger]",
+              "source": {
+                "$ref": "fb200f00f69b4213b5614d3b"
+              },
+              "target": {
+                "$ref": "9f969da1dbb641b5b38b058c"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "1dd9d4f9e62b46328fac0b63",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "[Yes / High Danger]",
+              "source": {
+                "$ref": "fb200f00f69b4213b5614d3b"
+              },
+              "target": {
+                "$ref": "71d13a4e3fd04ba4a23f66dc"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "438084d9565143fbab141d0a",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "71d13a4e3fd04ba4a23f66dc"
+              },
+              "target": {
+                "$ref": "3fd198bd56714890a5001a9b"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "ba9a2bec3d974bbb9607728e",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "3fd198bd56714890a5001a9b"
+              },
+              "target": {
+                "$ref": "9665e6b5f52948c599a91637"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "eec7587e7bd84b4496119d41",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "9665e6b5f52948c599a91637"
+              },
+              "target": {
+                "$ref": "c9e2dcc9257c477aa24e7bac"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "551594c6ab8442479e554223",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "[Manual Override]",
+              "source": {
+                "$ref": "c9e2dcc9257c477aa24e7bac"
+              },
+              "target": {
+                "$ref": "248dfba4721c4fa1b1005597"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "788308c6496d40468abd3edd",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Re-optimize",
+              "source": {
+                "$ref": "248dfba4721c4fa1b1005597"
+              },
+              "target": {
+                "$ref": "3fd198bd56714890a5001a9b"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "1bc63c01945040ae914d1e19",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "[Approved]",
+              "source": {
+                "$ref": "c9e2dcc9257c477aa24e7bac"
+              },
+              "target": {
+                "$ref": "4f74967773504537b85a041f"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "0dceb7073d8449b381eaf653",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "4f74967773504537b85a041f"
+              },
+              "target": {
+                "$ref": "d175719b4cdc458aaab28304"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "be14911a73f94e2fb99d1922",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "d175719b4cdc458aaab28304"
+              },
+              "target": {
+                "$ref": "50e438db0c104051815373dd"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "e6ca86bfec6f4a7597119177",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "50e438db0c104051815373dd"
+              },
+              "target": {
+                "$ref": "7b0f8e16dd424b36862dad88"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "ee96eec498054756aa10ad1c",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "7b0f8e16dd424b36862dad88"
+              },
+              "target": {
+                "$ref": "8591f1e0ffaf4f5caa2c4d07"
+              }
+            },
+            {
+              "_type": "UMLControlFlow",
+              "_id": "bbb71bc1fe364881a6932921",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "",
+              "source": {
+                "$ref": "9f969da1dbb641b5b38b058c"
+              },
+              "target": {
+                "$ref": "8591f1e0ffaf4f5caa2c4d07"
+              }
+            }
+          ],
+          "ownedElements": [
+            {
+              "_type": "UMLActivityDiagram",
+              "_id": "a471db87a33e43f080a7f17b",
+              "_parent": {
+                "$ref": "ef7a14372e0a43c0abc73822"
+              },
+              "name": "Activity Diagram - Operational Rescue Workflow"
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "3544514f22f441eca82fef21",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Presentation Tier",
+          "ownedElements": [
+            {
+              "_type": "UMLComponent",
+              "_id": "f1fe3cb9aaa4413caf570ccc",
+              "_parent": {
+                "$ref": "3544514f22f441eca82fef21"
+              },
+              "name": "Mobile SOS App (PWA/Flutter)"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "140744d11eee417cb198e469",
+              "_parent": {
+                "$ref": "3544514f22f441eca82fef21"
+              },
+              "name": "Web Command Center Dashboard"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "573bc5243ead46dd9020454d",
+              "_parent": {
+                "$ref": "3544514f22f441eca82fef21"
+              },
+              "name": "Field Responder Mobile App"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "ffdf14205b3d4698898a4c1f",
+              "_parent": {
+                "$ref": "3544514f22f441eca82fef21"
+              },
+              "name": "GIS Interactive Map Portal"
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "0e835d9a38634632b5426fc9",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "API Gateway & Services Tier",
+          "ownedElements": [
+            {
+              "_type": "UMLComponent",
+              "_id": "90f2b747612c4d96ac944299",
+              "_parent": {
+                "$ref": "0e835d9a38634632b5426fc9"
+              },
+              "name": "REST / WebSockets API Gateway"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "5aa5a5f1dad94b178e224dc9",
+              "_parent": {
+                "$ref": "0e835d9a38634632b5426fc9"
+              },
+              "name": "Authentication & Authorization Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "3e746c44cc724b05b252113a",
+              "_parent": {
+                "$ref": "0e835d9a38634632b5426fc9"
+              },
+              "name": "Notification & SOS Broadcast Engine"
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "d8bcb4584b254ff097fc335d",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Intelligence & Decision Support Tier",
+          "ownedElements": [
+            {
+              "_type": "UMLComponent",
+              "_id": "71bcfbe6ff9d45ebbc286227",
+              "_parent": {
+                "$ref": "d8bcb4584b254ff097fc335d"
+              },
+              "name": "AI/ML Risk Assessment Model"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "2ce8a4eb4b9d4d3bbdad9af0",
+              "_parent": {
+                "$ref": "d8bcb4584b254ff097fc335d"
+              },
+              "name": "Dijkstra/A* Safe Route Optimizer"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "abeca31f89864b9fb2df8bcd",
+              "_parent": {
+                "$ref": "d8bcb4584b254ff097fc335d"
+              },
+              "name": "Resource Allocation Engine (Genetic Alg)"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "a9d5605a486a453989cc81db",
+              "_parent": {
+                "$ref": "d8bcb4584b254ff097fc335d"
+              },
+              "name": "Hydrological Inundation Simulator"
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "43e69154a056400a829003db",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Data Access & Domain Logic Tier",
+          "ownedElements": [
+            {
+              "_type": "UMLComponent",
+              "_id": "b859fef75aa044a1b4bfc3cd",
+              "_parent": {
+                "$ref": "43e69154a056400a829003db"
+              },
+              "name": "Mission Management Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "390f3c68b5bf4667b417d817",
+              "_parent": {
+                "$ref": "43e69154a056400a829003db"
+              },
+              "name": "Sensor Data Ingestion Service"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "fda32ab86c6e4cefa2da4ee8",
+              "_parent": {
+                "$ref": "43e69154a056400a829003db"
+              },
+              "name": "Shelter & Inventory Coordinator"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "6b4eb72c57ed40cd8765c566",
+              "_parent": {
+                "$ref": "43e69154a056400a829003db"
+              },
+              "name": "ORM & Spatial Query Repositories"
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "4c8e84ef0c2345d281dd292d",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Persistence & External Integration Tier",
+          "ownedElements": [
+            {
+              "_type": "UMLComponent",
+              "_id": "e90f3d7e6cc44708a6c5799e",
+              "_parent": {
+                "$ref": "4c8e84ef0c2345d281dd292d"
+              },
+              "name": "PostgreSQL / PostGIS (Spatial DB)"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "fca28e41663a438d8f53a4b4",
+              "_parent": {
+                "$ref": "4c8e84ef0c2345d281dd292d"
+              },
+              "name": "Redis Cache (Real-time Telemetry)"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "a7ccf5addb694f9caf7bad59",
+              "_parent": {
+                "$ref": "4c8e84ef0c2345d281dd292d"
+              },
+              "name": "IoT Flood Sensor Network API"
+            },
+            {
+              "_type": "UMLComponent",
+              "_id": "edf8c82b74ee49c68f6900c9",
+              "_parent": {
+                "$ref": "4c8e84ef0c2345d281dd292d"
+              },
+              "name": "National Weather Service API"
+            }
+          ]
+        },
+        {
+          "_type": "UMLClassDiagram",
+          "_id": "2be74e27c8f04d40a6cce15c",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Class Diagram - Domain Model"
+        },
+        {
+          "_type": "UMLComponentDiagram",
+          "_id": "015b908bf8084ccda462ec81",
+          "_parent": {
+            "$ref": "d428d3853636419693dde7ac"
+          },
+          "name": "Layered Architecture Diagram"
+        }
+      ]
+    }
+  ]
+}
