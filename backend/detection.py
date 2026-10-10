@@ -37,31 +37,63 @@ else:
 
 
 def detect_people(image_bgr: np.ndarray):
-    """Detect people in the image using HOG + SVM.
+    """Detect people in the image using HOG + SVM, augmented with
+    upper-body / torso cascades for flood victims with submerged lower bodies.
 
     Returns:
         count (int), boxes (list of [x, y, w, h]), confidences (list[float])
     """
-    # HOG works best on images resized so the smaller dimension is ~400-600px
     h, w = image_bgr.shape[:2]
+    if h < 48 or w < 48:
+        return 0, [], []
+
     scale = 640.0 / max(h, w) if max(h, w) > 640 else 1.0
     resized = cv2.resize(image_bgr, (int(w * scale), int(h * scale)))
-
-    if _hog is not None:
-        rects, weights = _hog.detectMultiScale(
-            resized, winStride=(8, 8), padding=(8, 8), scale=1.05
-        )
-    else:
-        rects, weights = [], []
+    rh, rw = resized.shape[:2]
 
     boxes = []
     confidences = []
-    for (x, y, bw, bh), conf in zip(rects, weights):
-        # scale boxes back to original image size
-        boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
-        confidences.append(float(conf))
 
-    return len(boxes), boxes, confidences
+    # 1. HOG Pedestrian Detector (with finer 4x4 stride)
+    if _hog is not None and rh >= 64 and rw >= 64:
+        try:
+            rects, weights = _hog.detectMultiScale(
+                resized, winStride=(4, 4), padding=(4, 4), scale=1.05
+            )
+            for (x, y, bw, bh), conf in zip(rects, weights):
+                boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
+                confidences.append(float(conf))
+        except cv2.error:
+            pass
+
+    # 2. Upper-Body Cascade (vital for flood scenes where legs are submerged under water)
+    try:
+        import os
+        upper_path = os.path.join(cv2.data.haarcascades, "haarcascade_upperbody.xml")
+        if os.path.exists(upper_path):
+            cascade = cv2.CascadeClassifier(upper_path)
+            gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+            uppers = cascade.detectMultiScale(gray, scaleFactor=1.08, minNeighbors=2, minSize=(25, 35))
+            for (x, y, bw, bh) in uppers:
+                boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
+                confidences.append(0.6)
+    except Exception:
+        pass
+
+    # 3. Non-Maximum Suppression to eliminate duplicate overlapping detections
+    if len(boxes) > 0:
+        indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.0, nms_threshold=0.4)
+        if len(indices) > 0:
+            final_boxes = [boxes[i] for i in indices.flatten()]
+            final_confs = [confidences[i] for i in indices.flatten()]
+        else:
+            final_boxes = boxes
+            final_confs = confidences
+    else:
+        final_boxes = []
+        final_confs = []
+
+    return len(final_boxes), final_boxes, final_confs
 
 
 def detect_flood_water(image_bgr: np.ndarray):
