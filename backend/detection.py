@@ -66,23 +66,38 @@ def detect_people(image_bgr: np.ndarray):
         except cv2.error:
             pass
 
-    # 2. Upper-Body Cascade (vital for flood scenes where legs are submerged under water)
+    # 2. Multi-Cascade Detectors (vital for flood scenes where legs/chests are submerged)
     try:
         import os
+        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+        
+        # Upper body cascade
         upper_path = os.path.join(cv2.data.haarcascades, "haarcascade_upperbody.xml")
         if os.path.exists(upper_path):
-            cascade = cv2.CascadeClassifier(upper_path)
-            gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-            uppers = cascade.detectMultiScale(gray, scaleFactor=1.08, minNeighbors=2, minSize=(25, 35))
-            for (x, y, bw, bh) in uppers:
+            uc = cv2.CascadeClassifier(upper_path)
+            for (x, y, bw, bh) in uc.detectMultiScale(gray, scaleFactor=1.06, minNeighbors=2, minSize=(25, 30)):
                 boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
-                confidences.append(0.6)
+                confidences.append(0.7)
+
+        # Frontal and Profile face cascades (for victims wading neck-deep in water)
+        for cas_name, conf_val in [("haarcascade_frontalface_default.xml", 0.85), ("haarcascade_profileface.xml", 0.75)]:
+            cp = os.path.join(cv2.data.haarcascades, cas_name)
+            if os.path.exists(cp):
+                fc = cv2.CascadeClassifier(cp)
+                for (fx, fy, fw, fh) in fc.detectMultiScale(gray, scaleFactor=1.06, minNeighbors=3, minSize=(20, 20)):
+                    # Estimate upper-body torso bounds above water line
+                    bx = max(0, int((fx - fw * 0.2) / scale))
+                    by = max(0, int((fy - fh * 0.15) / scale))
+                    bw = min(w - bx, int((fw * 1.4) / scale))
+                    bh = min(h - by, int((fh * 2.0) / scale))
+                    boxes.append([bx, by, bw, bh])
+                    confidences.append(conf_val)
     except Exception:
         pass
 
     # 3. Non-Maximum Suppression to eliminate duplicate overlapping detections
     if len(boxes) > 0:
-        indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.0, nms_threshold=0.4)
+        indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.0, nms_threshold=0.35)
         if len(indices) > 0:
             final_boxes = [boxes[i] for i in indices.flatten()]
             final_confs = [confidences[i] for i in indices.flatten()]
@@ -159,9 +174,15 @@ def annotate_image(image_bgr: np.ndarray, boxes, flood_mask, damage_flag):
     copy of the image, and return it for saving/display."""
     annotated = image_bgr.copy()
 
+    # Exclude detected people from flood mask so human faces/skin aren't tinted red
+    clean_flood_mask = flood_mask.copy()
+    h_img, w_img = annotated.shape[:2]
+    for (x, y, w, h) in boxes:
+        clean_flood_mask[max(0, y - 5):min(h_img, y + h + 5), max(0, x - 5):min(w_img, x + w + 5)] = 0
+
     # Flood overlay (semi-transparent red tint over detected water)
     overlay = annotated.copy()
-    overlay[flood_mask > 0] = (0, 0, 255)
+    overlay[clean_flood_mask > 0] = (0, 0, 255)
     annotated = cv2.addWeighted(overlay, 0.35, annotated, 0.65, 0)
 
     # Person bounding boxes (green) + Privacy Anonymization Blur (Head/Face Region)
