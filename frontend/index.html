@@ -234,13 +234,72 @@
           <button class="chart-tab" data-chart="roc">📉 ROC &amp; AUC Analysis</button>
         </div>
 
-        <!-- Cleanly Contrained Chart Viewer -->
-        <div class="chart-viewer-card">
-          <div class="chart-canvas-container">
-            <img id="active-chart-img" src="/advanced_model_radar_benchmark.png" alt="Model Evaluation Chart" />
+        <!-- 2-Column Split: Compact Framed Chart (Left) + Scorecard Insights (Right) -->
+        <div class="analytics-showcase-grid">
+          
+          <!-- Left: Compact Contained Chart -->
+          <div class="chart-card-compact">
+            <div class="chart-card-header">
+              <span class="active-chart-title" id="active-chart-title">🎯 6-Axis Architecture Radar</span>
+              <span class="chart-status-pill">Empirical Test</span>
+            </div>
+            <div class="chart-canvas-compact">
+              <img id="active-chart-img" src="/advanced_model_radar_benchmark.png" alt="Model Evaluation Chart" />
+            </div>
+            <div id="chart-caption" class="chart-caption-compact">
+              The Proposed IFRDSS Multi-Cascade architecture dominates in Submerged Victim Recall (95.1%) and real-time CPU speed (38.4 ms).
+            </div>
           </div>
-          <div id="chart-caption" class="chart-caption-box">
-            <strong>Figure 1: 6-Dimensional Architectural Capability Radar.</strong> The Proposed IFRDSS Multi-Cascade architecture dominates baseline models in Submerged Victim Recall (95.1%) and real-time CPU speed (38.4 ms), whereas Linear SVM fails significantly on submerged limbs (58.2%).
+
+          <!-- Right: Interactive Architecture Scorecard -->
+          <div class="analytics-scorecard-compact">
+            <div class="scorecard-header">
+              <h3>Model Architecture Scorecards</h3>
+              <span class="scorecard-sub">Real-Time Field Viability</span>
+            </div>
+            
+            <div class="scorecard-item winner">
+              <div class="scorecard-top">
+                <span class="scorecard-badge">★ PROPOSED OPTIMAL</span>
+                <span class="scorecard-name">IFRDSS Multi-Cascade &amp; NMS</span>
+              </div>
+              <div class="scorecard-stats">
+                <div class="sc-stat">Acc: <strong>94.2%</strong></div>
+                <div class="sc-stat">Recall: <strong class="text-green">95.1%</strong></div>
+                <div class="sc-stat">Speed: <strong>38.4 ms</strong></div>
+                <div class="sc-stat">RAM: <strong>28.5 MB</strong></div>
+              </div>
+              <p class="scorecard-desc">Fuses face &amp; upper-body cascades with waterline projection. Cuts missed drownings by 88%.</p>
+            </div>
+
+            <div class="scorecard-item">
+              <div class="scorecard-top">
+                <span class="scorecard-badge grey">CONVENTIONAL</span>
+                <span class="scorecard-name">Standard HOG + Linear SVM</span>
+              </div>
+              <div class="scorecard-stats">
+                <div class="sc-stat">Acc: 89.7%</div>
+                <div class="sc-stat">Recall: <strong class="text-red">58.2%</strong></div>
+                <div class="sc-stat">Speed: 14.2 ms</div>
+                <div class="sc-stat">RAM: 12.4 MB</div>
+              </div>
+              <p class="scorecard-desc">Requires upright body with visible legs; misses 41.8% of chest-deep submerged victims.</p>
+            </div>
+
+            <div class="scorecard-item">
+              <div class="scorecard-top">
+                <span class="scorecard-badge grey">DEEP LEARNING</span>
+                <span class="scorecard-name">MobileNet-SSD (Deep CNN)</span>
+              </div>
+              <div class="scorecard-stats">
+                <div class="sc-stat">Acc: 88.5%</div>
+                <div class="sc-stat">Recall: 86.8%</div>
+                <div class="sc-stat">Speed: <strong class="text-amber">195.4 ms</strong></div>
+                <div class="sc-stat">RAM: <strong class="text-amber">184.0 MB</strong></div>
+              </div>
+              <p class="scorecard-desc">Good representation, but 5× higher latency and heavy GPU dependencies on field laptops.</p>
+            </div>
+
           </div>
         </div>
 

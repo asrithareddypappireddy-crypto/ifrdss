@@ -157,30 +157,38 @@ const chartTabs = document.querySelectorAll(".chart-tab");
 const activeChartImg = document.getElementById("active-chart-img");
 const chartCaption = document.getElementById("chart-caption");
 
+const activeChartTitle = document.getElementById("active-chart-title");
+
 const chartMeta = {
   radar: {
+    title: "🎯 6-Axis Architecture Radar",
     src: "/advanced_model_radar_benchmark.png",
-    caption: "<strong>Figure 1: 6-Dimensional Architectural Capability Radar.</strong> The Proposed IFRDSS Multi-Cascade architecture dominates all baselines in Submerged Victim Recall (95.1%) and real-time CPU speed (38.4 ms), while Linear SVM fails on submerged limbs (58.2%)."
+    caption: "The Proposed IFRDSS Multi-Cascade architecture dominates all baselines in Submerged Victim Recall (95.1%) and real-time CPU speed (38.4 ms), while Linear SVM drops to 58.2%."
   },
   confusion: {
+    title: "🟩 Confusion Matrix Grid (Error Analysis)",
     src: "/confusion_matrices_grid.png",
-    caption: "<strong>Figure 2: Confusion Matrices on Flood Disaster Imagery.</strong> The False Negative Rate (missed drowning victims) drops drastically from 41.8% in Linear SVM down to only 4.9% in the proposed IFRDSS model."
+    caption: "False Negative Rate (missed drowning victims) drops drastically from 41.8% in Linear SVM down to only 4.9% in the proposed IFRDSS model."
   },
   pr: {
+    title: "📈 Precision-Recall (PR) Curves",
     src: "/precision_recall_curves_multimodel.png",
-    caption: "<strong>Figure 3: Precision-Recall (PR) Curves for Submerged Victim Discovery.</strong> The proposed IFRDSS model sustains high precision even at near-100% recall (mAP@50 = 0.962), ensuring rescue responders are dispatched reliably."
+    caption: "The proposed IFRDSS model sustains high precision even at near-100% recall (mAP = 0.962), ensuring rescue responders are dispatched reliably."
   },
   accuracy: {
+    title: "📊 Multi-Metric Accuracy & F1 Comparison",
     src: "/model_accuracy_comparison.png",
-    caption: "<strong>Figure 4: Multi-Metric Comparison (Accuracy, Precision, Recall, F1).</strong> Proposed IFRDSS achieves 94.2% overall accuracy and 95.1% recall across tested disaster conditions."
+    caption: "Proposed IFRDSS achieves 94.2% overall accuracy and 95.1% recall across tested disaster conditions."
   },
   pareto: {
+    title: "⚡ Latency vs. Accuracy Pareto Frontier",
     src: "/latency_vs_accuracy_tradeoff.png",
-    caption: "<strong>Figure 5: Latency vs. Accuracy Pareto Frontier.</strong> Shows that IFRDSS executes at 38.4 ms (~26 FPS) within the sub-60ms real-time emergency triage window on CPU field hardware."
+    caption: "Shows that IFRDSS executes at 38.4 ms (~26 FPS) within the sub-60ms real-time emergency triage window on CPU field hardware."
   },
   roc: {
+    title: "📉 ROC Curves & AUC Analysis",
     src: "/roc_curves_comparison.png",
-    caption: "<strong>Figure 6: ROC &amp; AUC Curves.</strong> Proposed IFRDSS achieves the highest Area Under Curve (AUC = 0.978) with optimal true-positive sensitivity and low false alarms."
+    caption: "Proposed IFRDSS achieves the highest Area Under Curve (AUC = 0.978) with optimal true-positive sensitivity and low false alarms."
   }
 };
 
@@ -194,8 +202,9 @@ chartTabs.forEach((tab) => {
       setTimeout(() => {
         activeChartImg.src = chartMeta[key].src;
         chartCaption.innerHTML = chartMeta[key].caption;
+        if (activeChartTitle) activeChartTitle.textContent = chartMeta[key].title;
         activeChartImg.style.opacity = "1";
-      }, 150);
+      }, 120);
     }
   });
 });

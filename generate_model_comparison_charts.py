@@ -158,105 +158,102 @@ metrics = ["Accuracy", "Precision", "Recall", "F1-Score"]
 x = np.arange(len(model_names))
 width = 0.18
 
-fig, ax = plt.subplots(figsize=(12, 6.5))
-colors = ["#2b5c8f", "#3caea3", "#f6d55c", "#ed553b"]
+fig, ax = plt.subplots(figsize=(7.4, 4.2))
+colors = ["#1d4ed8", "#0284c7", "#f59e0b", "#ef4444"]
 
 for i, metric in enumerate(metrics):
     vals = [results[m][metric] for m in model_names]
     rects = ax.bar(x + (i - 1.5) * width, vals, width, label=metric, color=colors[i], edgecolor='white', linewidth=1)
-    # Add value labels on top of bars
     for rect in rects:
         h_val = rect.get_height()
         ax.annotate(f'{h_val:.1f}%',
                     xy=(rect.get_x() + rect.get_width() / 2, h_val),
-                    xytext=(0, 3), textcoords="offset points",
-                    ha='center', va='bottom', fontsize=7.5, rotation=45)
+                    xytext=(0, 2), textcoords="offset points",
+                    ha='center', va='bottom', fontsize=6.5, rotation=45)
 
-ax.set_title("Comparative Model Performance Evaluation for Disaster Victim Detection", fontsize=14, fontweight='bold', pad=15)
-ax.set_ylabel("Score (%)", fontsize=11, fontweight='bold')
+ax.set_title("Model Performance Evaluation", fontsize=11, fontweight='bold', pad=10)
+ax.set_ylabel("Score (%)", fontsize=9, fontweight='bold')
 ax.set_xticks(x)
-ax.set_xticklabels(model_names, fontsize=9.5, fontweight='bold', rotation=15, ha='right')
-ax.set_ylim(40, 105)
-ax.legend(loc='lower right', frameon=True, framealpha=0.9, shadow=True, fontsize=10)
-ax.grid(axis='y', linestyle='--', alpha=0.6)
+ax.set_xticklabels(model_names, fontsize=7.5, fontweight='bold', rotation=12, ha='right')
+ax.set_ylim(45, 105)
+ax.legend(loc='lower right', frameon=True, fontsize=7.5)
+ax.grid(axis='y', linestyle='--', alpha=0.5)
 
 plt.tight_layout()
 chart1_path = os.path.join(OUTPUT_DIR, "model_accuracy_comparison.png")
-plt.savefig(chart1_path, dpi=300)
+plt.savefig(chart1_path, dpi=160)
 plt.close()
 print(f"Saved: {chart1_path}")
 
 # --------------------------------------------------------------------------
 # 4. Chart 2: Latency vs. Accuracy Trade-Off (Pareto Frontier)
 # --------------------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(6.5, 4.0))
 
 latencies = [results[m]["Latency_ms"] for m in model_names]
 accuracies = [results[m]["Accuracy"] for m in model_names]
 f1_scores = [results[m]["F1-Score"] for m in model_names]
-bubble_sizes = [results[m]["Memory_MB"] * 12.0 for m in model_names]
+bubble_sizes = [results[m]["Memory_MB"] * 6.0 for m in model_names]
 
-scatter = ax.scatter(latencies, accuracies, s=bubble_sizes, c=f1_scores, cmap='viridis', alpha=0.85, edgecolors='black', linewidth=1.5)
+scatter = ax.scatter(latencies, accuracies, s=bubble_sizes, c=f1_scores, cmap='viridis', alpha=0.85, edgecolors='black', linewidth=1)
 cbar = plt.colorbar(scatter, ax=ax)
-cbar.set_label('F1-Score (%)', fontsize=11, fontweight='bold')
+cbar.set_label('F1-Score (%)', fontsize=8.5, fontweight='bold')
 
 for i, name in enumerate(model_names):
-    offset_x = 4 if name != "MobileNet-SSD (CNN)" else -35
-    offset_y = 1.2 if name != "Decision Tree" else -2.5
-    ax.annotate(f"{name}\n({latencies[i]:.1f}ms, {accuracies[i]:.1f}%)",
+    offset_x = 3 if name != "MobileNet-SSD (CNN)" else -35
+    offset_y = 1.0 if name != "Decision Tree" else -2.5
+    ax.annotate(f"{name}",
                 (latencies[i], accuracies[i]),
                 xytext=(latencies[i] + offset_x, accuracies[i] + offset_y),
-                fontsize=9, fontweight='bold',
-                arrowprops=dict(arrowstyle="->", color='gray', lw=1))
+                fontsize=7.5, fontweight='bold')
 
-# Highlight ideal operating region (High Accuracy + Low Latency)
-ax.axvspan(0, 60, color='green', alpha=0.08, label='Optimal Real-Time Emergency Window (< 60 ms)')
-ax.set_title("Inference Latency vs. Accuracy Trade-Off (Bubble Size = RAM MB)", fontsize=13, fontweight='bold', pad=15)
-ax.set_xlabel("Inference Latency per Frame (ms) [Lower is Faster]", fontsize=11, fontweight='bold')
-ax.set_ylabel("Detection Accuracy (%) [Higher is Better]", fontsize=11, fontweight='bold')
+ax.axvspan(0, 60, color='green', alpha=0.08, label='Optimal Real-Time Window (<60 ms)')
+ax.set_title("Inference Latency vs. Accuracy", fontsize=10.5, fontweight='bold', pad=10)
+ax.set_xlabel("Latency per Frame (ms)", fontsize=8.5, fontweight='bold')
+ax.set_ylabel("Accuracy (%)", fontsize=8.5, fontweight='bold')
 ax.set_xlim(-5, 230)
-ax.set_ylim(60, 100)
-ax.grid(True, linestyle='--', alpha=0.6)
-ax.legend(loc='lower left', frameon=True, fontsize=9.5)
+ax.set_ylim(65, 100)
+ax.grid(True, linestyle='--', alpha=0.5)
+ax.legend(loc='lower left', frameon=True, fontsize=7.5)
 
 plt.tight_layout()
 chart2_path = os.path.join(OUTPUT_DIR, "latency_vs_accuracy_tradeoff.png")
-plt.savefig(chart2_path, dpi=300)
+plt.savefig(chart2_path, dpi=160)
 plt.close()
 print(f"Saved: {chart2_path}")
 
 # --------------------------------------------------------------------------
 # 5. Chart 3: ROC Curves & AUC Comparison
 # --------------------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(8.5, 6))
+fig, ax = plt.subplots(figsize=(5.8, 4.0))
 
 roc_colors = {
-    "Linear SVM": "#e74c3c",
-    "RBF Kernel SVM": "#e67e22",
-    "Decision Tree": "#95a5a6",
-    "Random Forest": "#3498db",
-    "MobileNet-SSD (CNN)": "#9b59b6",
-    "IFRDSS (Proposed Fusion)": "#2ecc71"
+    "Linear SVM": "#ef4444",
+    "RBF Kernel SVM": "#ea580c",
+    "Decision Tree": "#94a3b8",
+    "Random Forest": "#0284c7",
+    "MobileNet-SSD (CNN)": "#8b5cf6",
+    "IFRDSS (Proposed Fusion)": "#16a34a"
 }
 
 for name in model_names:
     ax.plot(results[name]["fpr"], results[name]["tpr"],
-            label=f"{name} (AUC = {results[name]['AUC']:.3f})",
+            label=f"{name} (AUC={results[name]['AUC']:.3f})",
             color=roc_colors.get(name, "#333333"),
-            linewidth=2.4 if "IFRDSS" in name else 1.8)
+            linewidth=2.0 if "IFRDSS" in name else 1.3)
 
-ax.plot([0, 1], [0, 1], 'k--', lw=1.2, alpha=0.7, label='Random Chance (AUC = 0.500)')
+ax.plot([0, 1], [0, 1], 'k--', lw=1, alpha=0.6, label='Random Chance')
 ax.set_xlim([0.0, 1.0])
 ax.set_ylim([0.0, 1.05])
-ax.set_xlabel('False Positive Rate (1 - Specificity)', fontsize=11, fontweight='bold')
-ax.set_ylabel('True Positive Rate (Recall / Sensitivity)', fontsize=11, fontweight='bold')
-ax.set_title('Receiver Operating Characteristic (ROC) Comparison', fontsize=13, fontweight='bold', pad=15)
-ax.legend(loc="lower right", frameon=True, framealpha=0.95, shadow=True, fontsize=9.5)
-ax.grid(True, linestyle='--', alpha=0.6)
+ax.set_xlabel('False Positive Rate', fontsize=8.5, fontweight='bold')
+ax.set_ylabel('True Positive Rate', fontsize=8.5, fontweight='bold')
+ax.set_title('ROC Curves & AUC Comparison', fontsize=10.5, fontweight='bold', pad=10)
+ax.legend(loc="lower right", frameon=True, fontsize=7.5)
+ax.grid(True, linestyle='--', alpha=0.5)
 
 plt.tight_layout()
 chart3_path = os.path.join(OUTPUT_DIR, "roc_curves_comparison.png")
-plt.savefig(chart3_path, dpi=300)
+plt.savefig(chart3_path, dpi=160)
 plt.close()
 print(f"Saved: {chart3_path}")
 

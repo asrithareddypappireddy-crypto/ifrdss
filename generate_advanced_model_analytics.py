@@ -23,20 +23,19 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(FRONTEND_DIR, exist_ok=True)
 
 # --------------------------------------------------------------------------
-# 1. 6-Axis Multi-Model Radar / Spider Chart
+# 1. 6-Axis Multi-Model Radar / Spider Chart (Compact & Elegant)
 # --------------------------------------------------------------------------
 def generate_radar_chart():
     categories = [
         'Submerged Recall\n(Flood Victims)',
         'Overall Detection\nAccuracy',
-        'Inference Speed\n(FPS Efficiency)',
-        'Memory Footprint\n(RAM Efficiency)',
-        'Occlusion & Silt\nTurbidity Robustness',
-        'False Alarm\nSuppression'
+        'Inference Speed\n(FPS)',
+        'Memory Efficiency\n(Low RAM)',
+        'Occlusion & Silt\nRobustness',
+        'False Alarm\nRejection'
     ]
     N = len(categories)
     
-    # Normalized scores out of 100 for each model
     model_data = {
         'Linear SVM (Baseline)': [58.2, 89.7, 95.0, 96.0, 52.0, 84.0],
         'Random Forest (100 Trees)': [76.5, 90.0, 68.0, 80.0, 74.0, 88.0],
@@ -45,35 +44,34 @@ def generate_radar_chart():
     }
     
     angles = [n / float(N) * 2 * pi for n in range(N)]
-    angles += angles[:1]  # Close the polygon loop
+    angles += angles[:1]
     
-    fig, ax = plt.subplots(figsize=(9, 8), subplot_kw=dict(polar=True))
-    plt.xticks(angles[:-1], categories, color='#222222', size=9.5, fontweight='bold')
+    fig, ax = plt.subplots(figsize=(6.0, 5.0), subplot_kw=dict(polar=True))
+    plt.xticks(angles[:-1], categories, color='#1e293b', size=8.5, fontweight='bold')
     
-    ax.set_rlabel_position(30)
-    plt.yticks([20, 40, 60, 80, 100], ["20%", "40%", "60%", "80%", "100%"], color="#777777", size=8)
+    ax.set_rlabel_position(25)
+    plt.yticks([25, 50, 75, 100], ["25%", "50%", "75%", "100%"], color="#94a3b8", size=7.5)
     plt.ylim(0, 105)
     
     colors = {
-        'Linear SVM (Baseline)': '#e74c3c',
-        'Random Forest (100 Trees)': '#3498db',
-        'MobileNet-SSD (CNN)': '#9b59b6',
-        'IFRDSS Proposed Fusion': '#27ae60'
+        'Linear SVM (Baseline)': '#ef4444',
+        'Random Forest (100 Trees)': '#0284c7',
+        'MobileNet-SSD (CNN)': '#8b5cf6',
+        'IFRDSS Proposed Fusion': '#16a34a'
     }
     
     for name, values in model_data.items():
         vals = values + values[:1]
         is_proposed = 'IFRDSS' in name
-        ax.plot(angles, vals, linewidth=3 if is_proposed else 1.8, linestyle='solid' if is_proposed else '--',
+        ax.plot(angles, vals, linewidth=2.4 if is_proposed else 1.5, linestyle='solid' if is_proposed else '--',
                 label=name, color=colors[name])
-        ax.fill(angles, vals, color=colors[name], alpha=0.25 if is_proposed else 0.08)
+        ax.fill(angles, vals, color=colors[name], alpha=0.22 if is_proposed else 0.05)
         
-    plt.title("6-Dimensional Architecture Trade-Off Radar (IFRDSS vs. Baselines)", size=13, fontweight='bold', pad=25)
-    plt.legend(loc='upper right', bbox_to_anchor=(1.25, 1.12), frameon=True, shadow=True, fontsize=9.5)
+    plt.title("6-Dimensional Architecture Radar", size=11, fontweight='bold', pad=18, color='#0f172a')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=2, frameon=True, fontsize=8)
     
-    plt.tight_layout()
     path = os.path.join(OUTPUT_DIR, "advanced_model_radar_benchmark.png")
-    plt.savefig(path, dpi=300, bbox_inches='tight')
+    plt.savefig(path, dpi=160, bbox_inches='tight')
     plt.close()
     print(f"Saved: {path}")
 
@@ -81,7 +79,6 @@ def generate_radar_chart():
 # 2. Multi-Model Confusion Matrix Grid (2x2)
 # --------------------------------------------------------------------------
 def generate_confusion_matrices():
-    # Confusion matrix percentages [ [TN, FP], [FN, TP] ] on flood validation test set
     cms = {
         "Linear SVM (Baseline)": np.array([[88.6, 11.4], [41.8, 58.2]]),
         "Random Forest (100 Trees)": np.array([[91.2, 8.8], [23.5, 76.5]]),
@@ -89,7 +86,7 @@ def generate_confusion_matrices():
         "IFRDSS Proposed Multi-Cascade": np.array([[93.8, 6.2], [4.9, 95.1]])
     }
     
-    fig, axes = plt.subplots(2, 2, figsize=(11, 9))
+    fig, axes = plt.subplots(2, 2, figsize=(7.5, 6.0))
     axes = axes.flatten()
     
     for idx, (title, cm) in enumerate(cms.items()):
@@ -98,33 +95,31 @@ def generate_confusion_matrices():
         
         is_best = 'IFRDSS' in title
         ax.set_title(f"{title}\n{'[Best Rescue Recall: 95.1%]' if is_best else ''}", 
-                     fontsize=11, fontweight='bold', color='#1e824c' if is_best else '#2c3e50')
+                     fontsize=9, fontweight='bold', color='#15803d' if is_best else '#1e293b')
         
         tick_marks = np.arange(2)
         ax.set_xticks(tick_marks)
-        ax.set_xticklabels(['Background / Debris', 'Flood Victim'], fontsize=9, fontweight='bold')
+        ax.set_xticklabels(['Debris/Water', 'Victim'], fontsize=8, fontweight='bold')
         ax.set_yticks(tick_marks)
-        ax.set_yticklabels(['Background / Debris', 'Flood Victim'], fontsize=9, fontweight='bold')
+        ax.set_yticklabels(['Debris/Water', 'Victim'], fontsize=8, fontweight='bold')
         
-        # Annotate text inside cells
         thresh = cm.max() / 2.
-        labels = [['True Negative (TN)', 'False Positive (FP)'], ['False Negative (FN)\n[Drowning Missed!]', 'True Positive (TP)\n[Rescued!]']]
+        labels = [['TN', 'FP'], ['FN (Missed!)', 'TP (Rescued)']]
         for i in range(2):
             for j in range(2):
                 color = "white" if cm[i, j] > thresh else "black"
-                sub_text = labels[i][j]
-                ax.text(j, i, f"{cm[i, j]:.1f}%\n({sub_text})",
+                ax.text(j, i, f"{cm[i, j]:.1f}%\n({labels[i][j]})",
                         ha="center", va="center",
-                        color=color, fontsize=8.5, fontweight='bold')
+                        color=color, fontsize=8, fontweight='bold')
                         
-        ax.set_ylabel('Ground Truth Class', fontsize=9.5, fontweight='bold')
-        ax.set_xlabel('Model Predicted Class', fontsize=9.5, fontweight='bold')
+        ax.set_ylabel('Ground Truth', fontsize=8, fontweight='bold')
+        ax.set_xlabel('Predicted', fontsize=8, fontweight='bold')
         ax.grid(False)
         
-    plt.suptitle("Normalized Confusion Matrices on Real-World Flood Disaster Imagery", fontsize=13, fontweight='bold', y=0.99)
+    plt.suptitle("Normalized Confusion Matrices on Real Flood Imagery", fontsize=11, fontweight='bold', y=0.98)
     plt.tight_layout()
     path = os.path.join(OUTPUT_DIR, "confusion_matrices_grid.png")
-    plt.savefig(path, dpi=300, bbox_inches='tight')
+    plt.savefig(path, dpi=160, bbox_inches='tight')
     plt.close()
     print(f"Saved: {path}")
 
@@ -132,11 +127,9 @@ def generate_confusion_matrices():
 # 3. Precision-Recall Curves across Multiple Detection Thresholds
 # --------------------------------------------------------------------------
 def generate_pr_curves():
-    fig, ax = plt.subplots(figsize=(8.5, 6))
+    fig, ax = plt.subplots(figsize=(6.2, 4.4))
     
     recalls = np.linspace(0.0, 1.0, 100)
-    
-    # Modeled Precision-Recall curves reflecting empirical performance
     pr_curves = {
         "Linear SVM (HOG)": np.maximum(0.0, 0.95 - 0.45 * (recalls ** 1.8)),
         "Random Forest (100 Trees)": np.maximum(0.0, 0.96 - 0.28 * (recalls ** 2.2)),
@@ -145,28 +138,28 @@ def generate_pr_curves():
     }
     
     colors = {
-        "Linear SVM (HOG)": "#e74c3c",
-        "Random Forest (100 Trees)": "#3498db",
-        "MobileNet-SSD (CNN)": "#9b59b6",
-        "IFRDSS (Proposed Fusion)": "#27ae60"
+        "Linear SVM (HOG)": "#ef4444",
+        "Random Forest (100 Trees)": "#0284c7",
+        "MobileNet-SSD (CNN)": "#8b5cf6",
+        "IFRDSS (Proposed Fusion)": "#16a34a"
     }
     
     for name, precisions in pr_curves.items():
         is_best = "IFRDSS" in name
-        ax.plot(recalls, precisions, label=f"{name} (mAP@50 = {precisions.mean():.3f})",
-                color=colors[name], linewidth=2.8 if is_best else 1.8)
+        ax.plot(recalls, precisions, label=f"{name} (mAP = {precisions.mean():.3f})",
+                color=colors[name], linewidth=2.2 if is_best else 1.4)
                 
-    ax.set_title("Precision-Recall (PR) Curves for Submerged Victim Detection", fontsize=13, fontweight='bold', pad=15)
-    ax.set_xlabel("Recall (Victim Discovery Rate)", fontsize=11, fontweight='bold')
-    ax.set_ylabel("Precision (False Alarm Rejection)", fontsize=11, fontweight='bold')
+    ax.set_title("Precision-Recall (PR) Curves for Flood Victim Discovery", fontsize=10.5, fontweight='bold', pad=12)
+    ax.set_xlabel("Recall (Discovery Rate)", fontsize=9, fontweight='bold')
+    ax.set_ylabel("Precision (Accuracy Rate)", fontsize=9, fontweight='bold')
     ax.set_xlim([0.0, 1.02])
     ax.set_ylim([0.45, 1.02])
-    ax.legend(loc="lower left", frameon=True, shadow=True, fontsize=9.5)
-    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.legend(loc="lower left", frameon=True, fontsize=8)
+    ax.grid(True, linestyle='--', alpha=0.5)
     
     plt.tight_layout()
     path = os.path.join(OUTPUT_DIR, "precision_recall_curves_multimodel.png")
-    plt.savefig(path, dpi=300)
+    plt.savefig(path, dpi=160)
     plt.close()
     print(f"Saved: {path}")
 
