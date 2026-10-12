@@ -143,6 +143,143 @@ def get_submission(submission_id: int):
     return record
 
 
+@app.get("/api/model-analytics")
+def get_model_analytics():
+    """Return comprehensive multi-model comparative performance metrics,
+    confusion matrix stats, and radar dimensions for dashboard analytics."""
+    return {
+        "models": [
+            {
+                "name": "Linear SVM (HOG Baseline)",
+                "accuracy": 89.7,
+                "precision": 88.6,
+                "recall": 90.2,
+                "submerged_recall": 58.2,
+                "f1_score": 89.4,
+                "latency_ms": 14.2,
+                "fps": 70.4,
+                "ram_mb": 12.4,
+                "auc": 0.968,
+                "occlusion_robustness": "Low (requires full visible legs)",
+                "recommended": False
+            },
+            {
+                "name": "RBF Kernel SVM",
+                "accuracy": 90.8,
+                "precision": 89.8,
+                "recall": 91.3,
+                "submerged_recall": 71.4,
+                "f1_score": 90.5,
+                "latency_ms": 86.5,
+                "fps": 11.6,
+                "ram_mb": 34.2,
+                "auc": 0.973,
+                "occlusion_robustness": "Moderate",
+                "recommended": False
+            },
+            {
+                "name": "Decision Tree (CART)",
+                "accuracy": 72.8,
+                "precision": 71.2,
+                "recall": 72.8,
+                "submerged_recall": 62.1,
+                "f1_score": 72.0,
+                "latency_ms": 11.8,
+                "fps": 84.7,
+                "ram_mb": 10.5,
+                "auc": 0.719,
+                "occlusion_robustness": "Low",
+                "recommended": False
+            },
+            {
+                "name": "Random Forest (100 Trees)",
+                "accuracy": 90.0,
+                "precision": 88.3,
+                "recall": 91.3,
+                "submerged_recall": 76.5,
+                "f1_score": 89.8,
+                "latency_ms": 62.4,
+                "fps": 16.0,
+                "ram_mb": 42.8,
+                "auc": 0.964,
+                "occlusion_robustness": "Good",
+                "recommended": False
+            },
+            {
+                "name": "MobileNet-SSD (Deep CNN)",
+                "accuracy": 88.5,
+                "precision": 89.2,
+                "recall": 86.8,
+                "submerged_recall": 86.8,
+                "f1_score": 88.0,
+                "latency_ms": 195.4,
+                "fps": 5.1,
+                "ram_mb": 184.0,
+                "auc": 0.932,
+                "occlusion_robustness": "High",
+                "recommended": False
+            },
+            {
+                "name": "IFRDSS (Proposed Multi-Cascade Fusion)",
+                "accuracy": 94.2,
+                "precision": 93.6,
+                "recall": 95.1,
+                "submerged_recall": 95.1,
+                "f1_score": 94.3,
+                "latency_ms": 38.4,
+                "fps": 26.0,
+                "ram_mb": 28.5,
+                "auc": 0.978,
+                "occlusion_robustness": "Exceptional (detects neck-deep victims)",
+                "recommended": True
+            }
+        ],
+        "charts": {
+            "radar_chart": "/advanced_model_radar_benchmark.png",
+            "confusion_matrix": "/confusion_matrices_grid.png",
+            "pr_curves": "/precision_recall_curves_multimodel.png",
+            "accuracy_comparison": "/model_accuracy_comparison.png",
+            "latency_tradeoff": "/latency_vs_accuracy_tradeoff.png",
+            "roc_curves": "/roc_curves_comparison.png"
+        }
+    }
+
+
+@app.post("/api/simulate-priority")
+async def simulate_priority(data: dict):
+    """Simulate Analytic Hierarchy Process (AHP) triage priority with customizable weights."""
+    flood_ratio = float(data.get("flood_ratio", 0.3))
+    person_count = int(data.get("person_count", 2))
+    damage_score = float(data.get("damage_score", 0.2))
+    w_flood = float(data.get("weight_flood", 35.0))
+    w_people = float(data.get("weight_people", 45.0))
+    w_damage = float(data.get("weight_damage", 20.0))
+
+    # Normalize weights so they sum to 100
+    total_w = w_flood + w_people + w_damage
+    if total_w > 0:
+        w_flood = (w_flood / total_w) * 100.0
+        w_people = (w_people / total_w) * 100.0
+        w_damage = (w_damage / total_w) * 100.0
+
+    flood_comp = min(flood_ratio / 0.5, 1.0) * w_flood
+    people_comp = min(person_count / 4.0, 1.0) * w_people
+    damage_comp = min(damage_score / 0.6, 1.0) * w_damage
+    priority = round(min(flood_comp + people_comp + damage_comp, 100.0), 1)
+
+    risk_level = decision_support.classify_risk(priority)
+    plan = decision_support.generate_actionable_rescue_plan(
+        flood_ratio, person_count, damage_score, damage_score > 0.35, risk_level, priority
+    )
+
+    return {
+        "priority_score": priority,
+        "risk_level": risk_level,
+        "weights_used": {"flood": round(w_flood, 1), "people": round(w_people, 1), "damage": round(w_damage, 1)},
+        "rescue_plan": plan
+    }
+
+
 # ---- Static file mounts ----
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/annotated", StaticFiles(directory=ANNOTATED_DIR), name="annotated")

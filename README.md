@@ -123,16 +123,28 @@ To validate perception accuracy beyond standard Linear SVM, candidate machine le
 
 ### 📈 Evaluation Graphs
 
-1. **Accuracy & Metric Comparison across Models**:
+1. **6-Dimensional Architecture Radar Comparison**:
+   ![Radar Comparison](docs/advanced_model_radar_benchmark.png)
+
+2. **Normalized Confusion Matrices (Error Analysis Grid)**:
+   ![Confusion Matrices](docs/confusion_matrices_grid.png)
+
+3. **Precision-Recall (PR) Curves for Submerged Victim Discovery**:
+   ![PR Curves](docs/precision_recall_curves_multimodel.png)
+
+4. **Multi-Metric Accuracy & F1 Comparison across Models**:
    ![Model Accuracy Comparison](docs/model_accuracy_comparison.png)
 
-2. **Latency vs. Accuracy Trade-off (Pareto Frontier)**:
+5. **Latency vs. Accuracy Trade-off (Pareto Frontier)**:
    ![Latency vs Accuracy Tradeoff](docs/latency_vs_accuracy_tradeoff.png)
 
-3. **Receiver Operating Characteristic (ROC) & AUC Curves**:
+6. **Receiver Operating Characteristic (ROC) & AUC Curves**:
    ![ROC AUC Curves](docs/roc_curves_comparison.png)
 
-> **Key Architectural Takeaway:** The Proposed IFRDSS Multi-Cascade & NMS architecture delivers the highest victim recall (**95.1%**) and overall accuracy (**94.2%**) while executing in **38.4 ms** on pure CPU field laptops without GPU dependencies.
+> **Key Architectural Takeaways:**
+> - **Drastic False Negative Reduction**: False negatives (missed drowning victims) drop from **41.8%** in baseline Linear SVM down to **4.9%** in the proposed IFRDSS model.
+> - **Real-Time Edge Execution**: Executes at **~26 FPS (38.4 ms)** using only **28.5 MB RAM**, without requiring heavy GPU hardware.
+> - **Interactive AHP Multi-Criteria Decision Engine**: The web dashboard includes real-time weight adjustment sliders to simulate operational commander priorities across victim urgency, water inundation, and structural collapse.
 
 
 ## ⚡ Quick Start (Run Locally)

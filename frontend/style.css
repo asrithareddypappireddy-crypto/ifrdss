@@ -197,3 +197,215 @@ footer {
 .plan-steps-container ol li {
   margin-bottom: 6px;
 }
+
+/* ==========================================================================
+   ADVANCED AI MODEL BENCHMARKS & ANALYTICS PANEL
+   ========================================================================== */
+.analytics-panel {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.panel-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.panel-header-flex h2 {
+  margin: 0;
+}
+.badge-recommended {
+  background: #27ae60;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+.section-desc {
+  color: #64748b;
+  font-size: 13.5px;
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+/* Tab Bar */
+.chart-tab-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.chart-tab {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.chart-tab:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+.chart-tab.active {
+  background: #1e40af;
+  color: #ffffff;
+  border-color: #1e40af;
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.25);
+}
+
+/* Chart Viewer */
+.chart-viewer-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.chart-viewer-box img {
+  max-width: 100%;
+  max-height: 480px;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.chart-caption {
+  font-size: 12.5px;
+  color: #475569;
+  margin-top: 12px;
+  margin-bottom: 0;
+  line-height: 1.45;
+  text-align: left;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border-left: 4px solid #1e40af;
+}
+
+/* Benchmark Table */
+.benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+.benchmark-table th {
+  background: #1e293b;
+  color: #ffffff;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+.benchmark-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+.benchmark-table tr.highlight-row {
+  background: #f0fdf4;
+  font-weight: 600;
+}
+.benchmark-table tr.highlight-row td {
+  border-top: 2px solid #86efac;
+  border-bottom: 2px solid #86efac;
+  color: #14532d;
+}
+.tag-baseline {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.tag-mod {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.tag-low {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.tag-heavy {
+  background: #f3e8ff;
+  color: #6b21a8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.tag-best {
+  background: #22c55e;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* AHP Simulator */
+.ahp-simulator-box {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 18px;
+  margin-top: 24px;
+}
+.ahp-simulator-box h3 {
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 15px;
+  color: #0f172a;
+}
+.small-desc {
+  font-size: 12.5px;
+  color: #64748b;
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+.simulator-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.slider-group label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.slider-group input[type="range"] {
+  width: 100%;
+}
+.sim-result-badge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: #1e293b;
+}
+.sim-result-badge strong {
+  color: #1e40af;
+}
+
