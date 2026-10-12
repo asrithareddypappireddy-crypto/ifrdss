@@ -1,5 +1,29 @@
 const API_BASE = "";
 
+// ==========================================================================
+// NAVIGATION TAB SWITCHING
+// ==========================================================================
+const navButtons = document.querySelectorAll(".nav-btn");
+const tabPanels = document.querySelectorAll(".tab-content");
+
+navButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    navButtons.forEach((b) => b.classList.remove("active"));
+    tabPanels.forEach((p) => p.classList.remove("active"));
+
+    btn.classList.add("active");
+    const targetId = btn.getAttribute("data-target");
+    const targetPanel = document.getElementById(targetId);
+    if (targetPanel) {
+      targetPanel.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+});
+
+// ==========================================================================
+// UPLOAD FORM & PIPELINE EXECUTION
+// ==========================================================================
 const uploadForm = document.getElementById("upload-form");
 const fileInput = document.getElementById("file-input");
 const statusMsg = document.getElementById("status-msg");
@@ -11,19 +35,22 @@ const resPeople = document.getElementById("res-people");
 const resFlood = document.getElementById("res-flood");
 const resDamage = document.getElementById("res-damage");
 const resResponse = document.getElementById("res-response");
-const historyBody = document.getElementById("history-body");
-const sortSelect = document.getElementById("sort-select");
-const refreshBtn = document.getElementById("refresh-btn");
+const priorityBar = document.getElementById("priority-bar");
+const analyzeBtn = document.getElementById("analyze-btn");
 
 uploadForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!fileInput.files.length) return;
+  await processImageFile(fileInput.files[0]);
+});
 
-  const file = fileInput.files[0];
+async function processImageFile(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  statusMsg.textContent = "Analyzing image... please wait.";
+  statusMsg.innerHTML = "⏳ <span>Running Multi-Cascade CV Pipeline &amp; Triage Analysis... please wait</span>";
+  analyzeBtn.disabled = true;
+  analyzeBtn.style.opacity = "0.7";
   resultPanel.hidden = true;
 
   try {
@@ -37,10 +64,40 @@ uploadForm.addEventListener("submit", async (e) => {
     }
     const data = await resp.json();
     renderResult(data);
-    statusMsg.textContent = "Analysis complete.";
+    statusMsg.innerHTML = "✅ <span>Analysis complete! Triage metrics and rescue plan generated below.</span>";
     loadHistory();
+    // Smooth scroll down to result card
+    resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
-    statusMsg.textContent = "Error: " + err.message;
+    statusMsg.innerHTML = "❌ <span style='color:#dc2626'>Error: " + err.message + "</span>";
+  } finally {
+    analyzeBtn.disabled = false;
+    analyzeBtn.style.opacity = "1";
+  }
+}
+
+// Quick Sample Loaders
+document.getElementById("load-sample-1").addEventListener("click", async () => {
+  try {
+    statusMsg.innerHTML = "⏳ Fetching sample flood image 1...";
+    const res = await fetch("/sample_flood_image1.jpg");
+    const blob = await res.blob();
+    const file = new File([blob], "sample_flood_street.jpg", { type: "image/jpeg" });
+    await processImageFile(file);
+  } catch (e) {
+    statusMsg.textContent = "Could not load sample image: " + e.message;
+  }
+});
+
+document.getElementById("load-sample-2").addEventListener("click", async () => {
+  try {
+    statusMsg.innerHTML = "⏳ Fetching sample aerial image 2...";
+    const res = await fetch("/sample_flood_image2.jpg");
+    const blob = await res.blob();
+    const file = new File([blob], "sample_flood_aerial.jpg", { type: "image/jpeg" });
+    await processImageFile(file);
+  } catch (e) {
+    statusMsg.textContent = "Could not load sample image: " + e.message;
   }
 });
 
@@ -49,12 +106,17 @@ function renderResult(data) {
   resultImage.src = `/annotated/${data.annotated_filename}`;
   riskBadge.textContent = `Risk: ${data.risk_level}`;
   riskBadge.className = "badge " + data.risk_level;
+  
   resPriority.textContent = `${data.rescue_priority} / 100`;
-  resPeople.textContent = data.person_count;
+  if (priorityBar) {
+    priorityBar.style.width = `${Math.min(100, Math.max(0, data.rescue_priority))}%`;
+  }
+  
+  resPeople.textContent = `${data.person_count} person(s)`;
   resFlood.textContent = `${(data.flood_ratio * 100).toFixed(1)}%`;
   resDamage.textContent = data.damage_flag
-    ? `Possible damage (score ${data.damage_score})`
-    : `No significant indicators (score ${data.damage_score})`;
+    ? `Possible structural damage (score: ${data.damage_score})`
+    : `No significant damage (score: ${data.damage_score})`;
   resResponse.textContent = data.suggested_response;
 
   if (data.rescue_plan) {
@@ -88,33 +150,8 @@ function renderResult(data) {
   }
 }
 
-async function loadHistory() {
-  const sortBy = sortSelect.value;
-  const order = sortBy === "timestamp" ? "desc" : "desc";
-  const resp = await fetch(`${API_BASE}/api/submissions?sort_by=${sortBy}&order=${order}`);
-  const rows = await resp.json();
-  historyBody.innerHTML = "";
-  rows.forEach((r) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r.id}</td>
-      <td><img class="thumb" src="/uploads/${r.filename}" alt="thumb"/></td>
-      <td><span class="risk-pill ${r.risk_level}">${r.risk_level}</span></td>
-      <td>${r.rescue_priority}</td>
-      <td>${r.person_count}</td>
-      <td>${(r.flood_ratio * 100).toFixed(1)}%</td>
-      <td>${r.suggested_response}</td>
-      <td>${new Date(r.timestamp + "Z").toLocaleString()}</td>
-    `;
-    historyBody.appendChild(tr);
-  });
-}
-
-sortSelect.addEventListener("change", loadHistory);
-refreshBtn.addEventListener("click", loadHistory);
-
 // ==========================================================================
-// ADVANCED AI MODEL BENCHMARKS & ANALYTICS INTERACTION
+// AI MODEL BENCHMARKS & ANALYTICS INTERACTION
 // ==========================================================================
 const chartTabs = document.querySelectorAll(".chart-tab");
 const activeChartImg = document.getElementById("active-chart-img");
@@ -123,27 +160,27 @@ const chartCaption = document.getElementById("chart-caption");
 const chartMeta = {
   radar: {
     src: "/advanced_model_radar_benchmark.png",
-    caption: "<strong>Figure 1: 6-Dimensional Radar Trade-Off.</strong> The Proposed IFRDSS Multi-Cascade architecture dominates all baselines on Submerged Victim Recall (95.1%) and real-time CPU speed (38.4 ms), while Linear SVM fails on submerged limbs (58.2%)."
+    caption: "<strong>Figure 1: 6-Dimensional Architectural Capability Radar.</strong> The Proposed IFRDSS Multi-Cascade architecture dominates all baselines in Submerged Victim Recall (95.1%) and real-time CPU speed (38.4 ms), while Linear SVM fails on submerged limbs (58.2%)."
   },
   confusion: {
     src: "/confusion_matrices_grid.png",
-    caption: "<strong>Figure 2: Confusion Matrices on Flood Imagery.</strong> The False Negative Rate (missed drowning victims) drops drastically from 41.8% in Linear SVM down to only 4.9% in the proposed IFRDSS model."
+    caption: "<strong>Figure 2: Confusion Matrices on Flood Disaster Imagery.</strong> The False Negative Rate (missed drowning victims) drops drastically from 41.8% in Linear SVM down to only 4.9% in the proposed IFRDSS model."
   },
   pr: {
     src: "/precision_recall_curves_multimodel.png",
-    caption: "<strong>Figure 3: Precision-Recall Curves.</strong> The proposed IFRDSS model sustains high precision even at near-100% recall (mAP@50 = 0.962), ensuring search-and-rescue teams don't miss occluded survivors."
+    caption: "<strong>Figure 3: Precision-Recall (PR) Curves for Submerged Victim Discovery.</strong> The proposed IFRDSS model sustains high precision even at near-100% recall (mAP@50 = 0.962), ensuring rescue responders are dispatched reliably."
   },
   accuracy: {
     src: "/model_accuracy_comparison.png",
-    caption: "<strong>Figure 4: Multi-Metric Comparison (Accuracy, Precision, Recall, F1).</strong> Proposed IFRDSS achieves 94.2% accuracy and 95.1% recall across tested disaster conditions."
+    caption: "<strong>Figure 4: Multi-Metric Comparison (Accuracy, Precision, Recall, F1).</strong> Proposed IFRDSS achieves 94.2% overall accuracy and 95.1% recall across tested disaster conditions."
   },
   pareto: {
     src: "/latency_vs_accuracy_tradeoff.png",
-    caption: "<strong>Figure 5: Latency vs. Accuracy Pareto Frontier.</strong> Shows that IFRDSS executes at 38.4 ms (~26 FPS) within the sub-60ms real-time emergency window on CPU field hardware."
+    caption: "<strong>Figure 5: Latency vs. Accuracy Pareto Frontier.</strong> Shows that IFRDSS executes at 38.4 ms (~26 FPS) within the sub-60ms real-time emergency triage window on CPU field hardware."
   },
   roc: {
     src: "/roc_curves_comparison.png",
-    caption: "<strong>Figure 6: ROC & AUC Curves.</strong> Proposed IFRDSS achieves the highest Area Under Curve (AUC = 0.978) with optimal true-positive sensitivity and low false alarms."
+    caption: "<strong>Figure 6: ROC &amp; AUC Curves.</strong> Proposed IFRDSS achieves the highest Area Under Curve (AUC = 0.978) with optimal true-positive sensitivity and low false alarms."
   }
 };
 
@@ -153,13 +190,19 @@ chartTabs.forEach((tab) => {
     tab.classList.add("active");
     const key = tab.getAttribute("data-chart");
     if (chartMeta[key]) {
-      activeChartImg.src = chartMeta[key].src;
-      chartCaption.innerHTML = chartMeta[key].caption;
+      activeChartImg.style.opacity = "0.2";
+      setTimeout(() => {
+        activeChartImg.src = chartMeta[key].src;
+        chartCaption.innerHTML = chartMeta[key].caption;
+        activeChartImg.style.opacity = "1";
+      }, 150);
     }
   });
 });
 
-// AHP Multi-Criteria Simulator
+// ==========================================================================
+// AHP MULTI-CRITERIA TRIAGE SIMULATOR
+// ==========================================================================
 const sliderPeople = document.getElementById("slider-w-people");
 const sliderFlood = document.getElementById("slider-w-flood");
 const sliderDamage = document.getElementById("slider-w-damage");
@@ -171,6 +214,7 @@ const simRisk = document.getElementById("sim-risk");
 const simAsset = document.getElementById("sim-asset");
 
 async function updateAhpSimulation() {
+  if (!sliderPeople) return;
   const wp = parseFloat(sliderPeople.value);
   const wf = parseFloat(sliderFlood.value);
   const wd = parseFloat(sliderDamage.value);
@@ -210,6 +254,46 @@ if (sliderPeople && sliderFlood && sliderDamage) {
   updateAhpSimulation();
 }
 
-// initial load
-loadHistory();
+// ==========================================================================
+// SUBMISSION HISTORY
+// ==========================================================================
+const historyBody = document.getElementById("history-body");
+const sortSelect = document.getElementById("sort-select");
+const refreshBtn = document.getElementById("refresh-btn");
 
+async function loadHistory() {
+  if (!historyBody) return;
+  const sortBy = sortSelect ? sortSelect.value : "timestamp";
+  const order = "desc";
+  try {
+    const resp = await fetch(`${API_BASE}/api/submissions?sort_by=${sortBy}&order=${order}`);
+    const rows = await resp.json();
+    historyBody.innerHTML = "";
+    if (rows.length === 0) {
+      historyBody.innerHTML = "<tr><td colspan='8' style='text-align:center;color:#94a3b8;padding:24px'>No submissions recorded yet.</td></tr>";
+      return;
+    }
+    rows.forEach((r) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>#${r.id}</strong></td>
+        <td><img class="thumb" src="/uploads/${r.filename}" alt="thumb" onerror="this.src='/sample_flood_image1.jpg'"/></td>
+        <td><span class="risk-pill ${r.risk_level}">${r.risk_level}</span></td>
+        <td><strong style="color:#1d4ed8">${r.rescue_priority}</strong>/100</td>
+        <td>${r.person_count}</td>
+        <td>${(r.flood_ratio * 100).toFixed(1)}%</td>
+        <td style="font-size:12px;max-width:240px;color:#334155">${r.suggested_response}</td>
+        <td style="font-size:11.5px;color:#64748b">${new Date(r.timestamp + "Z").toLocaleString()}</td>
+      `;
+      historyBody.appendChild(tr);
+    });
+  } catch (e) {
+    console.error("Failed to load history", e);
+  }
+}
+
+if (sortSelect) sortSelect.addEventListener("change", loadHistory);
+if (refreshBtn) refreshBtn.addEventListener("click", loadHistory);
+
+// Initial Load
+loadHistory();
