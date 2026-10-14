@@ -221,6 +221,33 @@ const valDamage = document.getElementById("val-w-damage");
 const simScore = document.getElementById("sim-score");
 const simRisk = document.getElementById("sim-risk");
 const simAsset = document.getElementById("sim-asset");
+const simAssetDesc = document.getElementById("sim-asset-desc");
+const trackPeople = document.getElementById("track-people");
+const trackFlood = document.getElementById("track-flood");
+const trackDamage = document.getElementById("track-damage");
+
+// Scenario Presets Definition
+const scenarioPresets = {
+  balanced: { people: 45, flood: 35, damage: 20 },
+  rooftop: { people: 65, flood: 20, damage: 15 },
+  flashflood: { people: 25, flood: 60, damage: 15 },
+  collapse: { people: 30, flood: 25, damage: 45 }
+};
+
+const presetButtons = document.querySelectorAll(".preset-btn");
+presetButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    presetButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    const pKey = btn.getAttribute("data-preset");
+    if (scenarioPresets[pKey] && sliderPeople && sliderFlood && sliderDamage) {
+      sliderPeople.value = scenarioPresets[pKey].people;
+      sliderFlood.value = scenarioPresets[pKey].flood;
+      sliderDamage.value = scenarioPresets[pKey].damage;
+      updateAhpSimulation();
+    }
+  });
+});
 
 async function updateAhpSimulation() {
   if (!sliderPeople) return;
@@ -231,6 +258,10 @@ async function updateAhpSimulation() {
   valPeople.textContent = `${wp}%`;
   valFlood.textContent = `${wf}%`;
   valDamage.textContent = `${wd}%`;
+
+  if (trackPeople) trackPeople.style.width = `${wp}%`;
+  if (trackFlood) trackFlood.style.width = `${wf}%`;
+  if (trackDamage) trackDamage.style.width = `${wd}%`;
 
   try {
     const res = await fetch(`${API_BASE}/api/simulate-priority`, {
@@ -247,9 +278,17 @@ async function updateAhpSimulation() {
     });
     if (res.ok) {
       const data = await res.json();
-      simScore.textContent = data.priority_score;
-      simRisk.textContent = data.risk_level;
-      simAsset.textContent = data.rescue_plan.primary_asset;
+      if (simScore) simScore.textContent = data.priority_score;
+      if (simRisk) {
+        simRisk.textContent = data.risk_level;
+        simRisk.className = `sim-risk-tag ${data.risk_level}`;
+      }
+      if (simAsset && data.rescue_plan) {
+        simAsset.textContent = data.rescue_plan.primary_asset;
+      }
+      if (simAssetDesc && data.rescue_plan) {
+        simAssetDesc.textContent = data.rescue_plan.recommended_action || data.rescue_plan.extraction_method || "Tactical response deployed according to AHP multi-criteria priority matrix.";
+      }
     }
   } catch (e) {
     console.error("Simulation error", e);
@@ -257,9 +296,18 @@ async function updateAhpSimulation() {
 }
 
 if (sliderPeople && sliderFlood && sliderDamage) {
-  sliderPeople.addEventListener("input", updateAhpSimulation);
-  sliderFlood.addEventListener("input", updateAhpSimulation);
-  sliderDamage.addEventListener("input", updateAhpSimulation);
+  sliderPeople.addEventListener("input", () => {
+    presetButtons.forEach((b) => b.classList.remove("active"));
+    updateAhpSimulation();
+  });
+  sliderFlood.addEventListener("input", () => {
+    presetButtons.forEach((b) => b.classList.remove("active"));
+    updateAhpSimulation();
+  });
+  sliderDamage.addEventListener("input", () => {
+    presetButtons.forEach((b) => b.classList.remove("active"));
+    updateAhpSimulation();
+  });
   updateAhpSimulation();
 }
 
