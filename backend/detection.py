@@ -47,18 +47,18 @@ def detect_people(image_bgr: np.ndarray):
     if h < 48 or w < 48:
         return 0, [], []
 
-    scale = 640.0 / max(h, w) if max(h, w) > 640 else 1.0
+    scale = 800.0 / max(h, w) if max(h, w) > 800 else 1.0
     resized = cv2.resize(image_bgr, (int(w * scale), int(h * scale)))
     rh, rw = resized.shape[:2]
 
     boxes = []
     confidences = []
 
-    # 1. HOG Pedestrian Detector (with finer 4x4 stride)
+    # 1. HOG Pedestrian Detector (with fine 4x4 stride)
     if _hog is not None and rh >= 64 and rw >= 64:
         try:
             rects, weights = _hog.detectMultiScale(
-                resized, winStride=(4, 4), padding=(4, 4), scale=1.05
+                resized, winStride=(4, 4), padding=(4, 4), scale=1.04
             )
             for (x, y, bw, bh), conf in zip(rects, weights):
                 boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
@@ -70,34 +70,46 @@ def detect_people(image_bgr: np.ndarray):
     try:
         import os
         gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-        
-        # Upper body cascade
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)).apply(gray)
+
+        # Upper body cascade (with variance filter to prevent water ripple false alarms)
         upper_path = os.path.join(cv2.data.haarcascades, "haarcascade_upperbody.xml")
         if os.path.exists(upper_path):
             uc = cv2.CascadeClassifier(upper_path)
-            for (x, y, bw, bh) in uc.detectMultiScale(gray, scaleFactor=1.06, minNeighbors=2, minSize=(25, 30)):
-                boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
-                confidences.append(0.7)
+            for (x, y, bw, bh) in uc.detectMultiScale(gray, scaleFactor=1.04, minNeighbors=3, minSize=(22, 22)):
+                roi = gray[y:y+bh, x:x+bw]
+                if roi.size > 0 and np.std(roi) > 20:
+                    boxes.append([int(x / scale), int(y / scale), int(bw / scale), int(bh / scale)])
+                    confidences.append(0.72)
 
-        # Frontal and Profile face cascades (for victims wading neck-deep in water)
-        for cas_name, conf_val in [("haarcascade_frontalface_default.xml", 0.85), ("haarcascade_profileface.xml", 0.75)]:
+        # Multi-Cascade Face Ensembles (Frontal Alt2, Alt, Default, Profile)
+        cas_configs = [
+            ("haarcascade_frontalface_alt2.xml", 2, 0.90),
+            ("haarcascade_frontalface_alt.xml", 2, 0.88),
+            ("haarcascade_frontalface_default.xml", 3, 0.82),
+            ("haarcascade_profileface.xml", 2, 0.78),
+        ]
+        for cas_name, min_n, conf_val in cas_configs:
             cp = os.path.join(cv2.data.haarcascades, cas_name)
             if os.path.exists(cp):
                 fc = cv2.CascadeClassifier(cp)
-                for (fx, fy, fw, fh) in fc.detectMultiScale(gray, scaleFactor=1.06, minNeighbors=3, minSize=(20, 20)):
-                    # Estimate upper-body torso bounds above water line
-                    bx = max(0, int((fx - fw * 0.2) / scale))
-                    by = max(0, int((fy - fh * 0.15) / scale))
-                    bw = min(w - bx, int((fw * 1.4) / scale))
-                    bh = min(h - by, int((fh * 2.0) / scale))
-                    boxes.append([bx, by, bw, bh])
-                    confidences.append(conf_val)
+                for g_img in [gray, clahe]:
+                    f_rects = fc.detectMultiScale(g_img, scaleFactor=1.04, minNeighbors=min_n, minSize=(14, 14))
+                    for (fx, fy, fw, fh) in f_rects:
+                        bx = max(0, int((fx - fw * 0.15) / scale))
+                        by = max(0, int((fy - fh * 0.10) / scale))
+                        bw = min(w - bx, int((fw * 1.30) / scale))
+                        bh = min(h - by, int((fh * 1.60) / scale))
+                        roi = gray[int(fy):int(fy+fh), int(fx):int(fx+fw)]
+                        if roi.size > 0 and np.std(roi) > 14:
+                            boxes.append([bx, by, bw, bh])
+                            confidences.append(conf_val)
     except Exception:
         pass
 
     # 3. Non-Maximum Suppression to eliminate duplicate overlapping detections
     if len(boxes) > 0:
-        indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.0, nms_threshold=0.35)
+        indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.0, nms_threshold=0.38)
         if len(indices) > 0:
             final_boxes = [boxes[i] for i in indices.flatten()]
             final_confs = [confidences[i] for i in indices.flatten()]
