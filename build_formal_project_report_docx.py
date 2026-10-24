@@ -259,23 +259,6 @@ def build_cover_page(doc):
 
     add_page_break(doc)
 
-def build_acknowledgement(doc):
-    format_heading(doc, "ACKNOWLEDGEMENT", 1)
-    format_body(
-        doc,
-        "I express my sincere and deep gratitude to my respected Project Guide ('mam') for her continuous guidance, constructive feedback, and encouragement throughout this project. Her advice to study software testing tools--specifically comparing Apache JMeter, Micro Focus LoadRunner, and Selenium, and executing an empirical performance load test using Apache JMeter--greatly improved the engineering depth of this project."
-    )
-    format_body(
-        doc,
-        "I also thank our Head of the Department and all the faculty members of the Computer Science and Engineering Department for providing the laboratory facilities and academic environment that enabled me to develop and test this software application."
-    )
-    format_body(
-        doc,
-        "Finally, I am grateful to my family and friends for their constant encouragement and support throughout my engineering studies."
-    )
-
-    add_page_break(doc)
-
 def build_executive_abstract(doc):
     format_heading(doc, "ABSTRACT", 1)
     format_body(
@@ -310,10 +293,9 @@ def build_tables_of_contents_and_lists(doc):
     format_heading(doc, "TABLE OF CONTENTS", 1)
     
     toc_items = [
-        ("Acknowledgement", "i"),
-        ("Abstract", "ii"),
-        ("List of Figures", "iv"),
-        ("List of Tables", "v"),
+        ("Abstract", "i"),
+        ("List of Figures", "iii"),
+        ("List of Tables", "iv"),
         ("Chapter 1: Introduction", "1"),
         ("    1.1 Project Background and Motivation", "1"),
         ("    1.2 Problem Statement", "2"),
@@ -1348,9 +1330,8 @@ def generate_formal_report():
     doc = docx.Document()
     add_header_footer(doc)
     
-    print("[+] Building Front Matter (Cover, Acknowledgement, Abstract, TOC)...")
+    print("[+] Building Front Matter (Cover, Abstract, TOC)...")
     build_cover_page(doc)
-    build_acknowledgement(doc)
     build_executive_abstract(doc)
     build_tables_of_contents_and_lists(doc)
     
