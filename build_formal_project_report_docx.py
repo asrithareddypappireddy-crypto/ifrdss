@@ -259,75 +259,7 @@ def build_cover_page(doc):
 
     add_page_break(doc)
 
-def build_bonafide_certificate(doc):
-    p_hdr = doc.add_paragraph()
-    p_hdr.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_hdr = p_hdr.add_run("BONAFIDE CERTIFICATE")
-    r_hdr.font.name = "Arial"
-    r_hdr.font.size = Pt(16)
-    r_hdr.font.bold = True
-    r_hdr.font.color.rgb = COLOR_NAVY
-    p_hdr.paragraph_format.space_before = Pt(20)
-    p_hdr.paragraph_format.space_after = Pt(20)
-
-    format_body(
-        doc,
-        "This is to certify that the project report entitled 'INTELLIGENT FLOOD RESCUE DECISION SUPPORT SYSTEM (IFRDSS)' is the bonafide work carried out by Asritha Reddy Pappireddy in partial fulfillment of the requirements for the award of the degree of Bachelor of Technology in Computer Science and Engineering during the academic year 2025 - 2026."
-    )
-    format_body(
-        doc,
-        "The project work presented in this report comprises the design, implementation, and automated testing of a computer vision and decision support web system for flood rescue triage, including automated testing with pytest and performance load testing with Apache JMeter under my supervision."
-    )
-    
-    doc.add_paragraph().paragraph_format.space_after = Pt(45)
-
-    # Signatures Table
-    t_sig = doc.add_table(rows=2, cols=2)
-    t_sig.alignment = WD_TABLE_ALIGNMENT.CENTER
-    sig_cells = [
-        ("____________________________________\nPROJECT GUIDE / SUPERVISOR\nDepartment of Computer Science & Engineering",
-         "____________________________________\nHEAD OF THE DEPARTMENT\nDepartment of Computer Science & Engineering"),
-        ("____________________________________\nINTERNAL EXAMINER\nDate: ____ / ____ / 2026",
-         "____________________________________\nEXTERNAL EXAMINER\nDate: ____ / ____ / 2026")
-    ]
-    for r_idx, (s0, s1) in enumerate(sig_cells):
-        row = t_sig.rows[r_idx]
-        c0, c1 = row.cells[0], row.cells[1]
-        c0.width = Inches(3.2)
-        c1.width = Inches(3.2)
-        c0.text = s0
-        c1.text = s1
-        set_cell_margins(c0, top=80, bottom=80, left=50, right=50)
-        set_cell_margins(c1, top=80, bottom=80, left=50, right=50)
-        c0.paragraphs[0].runs[0].font.size = Pt(9.5)
-        c0.paragraphs[0].runs[0].font.bold = True
-        c0.paragraphs[0].runs[0].font.color.rgb = COLOR_NAVY
-        c1.paragraphs[0].runs[0].font.size = Pt(9.5)
-        c1.paragraphs[0].runs[0].font.bold = True
-        c1.paragraphs[0].runs[0].font.color.rgb = COLOR_NAVY
-
-    add_page_break(doc)
-
-def build_declaration_and_acknowledgement(doc):
-    format_heading(doc, "CANDIDATE DECLARATION", 1)
-    format_body(
-        doc,
-        "I hereby declare that this capstone project report titled 'INTELLIGENT FLOOD RESCUE DECISION SUPPORT SYSTEM (IFRDSS)' has been written and prepared by me, Asritha Reddy Pappireddy, in partial fulfillment of the requirements for the award of Bachelor of Technology in Computer Science and Engineering."
-    )
-    format_body(
-        doc,
-        "I confirm that this project represents my own practical work, code implementation, and testing. All code files, algorithms, and test plans documented here have been implemented, tested, and validated on our local development system. All literature, reference papers, and external software libraries (FastAPI, OpenCV, scikit-learn, Apache JMeter, Selenium, pytest) used in this work have been properly cited and acknowledged."
-    )
-    
-    p_sig = doc.add_paragraph()
-    p_sig.paragraph_format.space_before = Pt(16)
-    p_sig.paragraph_format.space_after = Pt(20)
-    r_sig = p_sig.add_run("Date: 24th October 2026\nPlace: Campus\n\n___________________________________\nAsritha Reddy Pappireddy\nStudent, Dept. of Computer Science & Engineering")
-    r_sig.font.name = "Calibri"
-    r_sig.font.size = Pt(10)
-    r_sig.font.bold = True
-    r_sig.font.color.rgb = COLOR_NAVY
-
+def build_acknowledgement(doc):
     format_heading(doc, "ACKNOWLEDGEMENT", 1)
     format_body(
         doc,
@@ -378,12 +310,10 @@ def build_tables_of_contents_and_lists(doc):
     format_heading(doc, "TABLE OF CONTENTS", 1)
     
     toc_items = [
-        ("Bonafide Certificate", "ii"),
-        ("Candidate Declaration", "iii"),
-        ("Acknowledgement", "iv"),
-        ("Abstract", "v"),
-        ("List of Figures", "vii"),
-        ("List of Tables", "viii"),
+        ("Acknowledgement", "i"),
+        ("Abstract", "ii"),
+        ("List of Figures", "iv"),
+        ("List of Tables", "v"),
         ("Chapter 1: Introduction", "1"),
         ("    1.1 Project Background and Motivation", "1"),
         ("    1.2 Problem Statement", "2"),
@@ -1418,10 +1348,9 @@ def generate_formal_report():
     doc = docx.Document()
     add_header_footer(doc)
     
-    print("[+] Building Front Matter (Cover, Certificate, Declaration, Acknowledgement, Abstract, TOC)...")
+    print("[+] Building Front Matter (Cover, Acknowledgement, Abstract, TOC)...")
     build_cover_page(doc)
-    build_bonafide_certificate(doc)
-    build_declaration_and_acknowledgement(doc)
+    build_acknowledgement(doc)
     build_executive_abstract(doc)
     build_tables_of_contents_and_lists(doc)
     
@@ -1457,21 +1386,24 @@ def generate_formal_report():
     doc.save(OUTPUT_DOCX)
     print(f"[OK] Master document created in docs: {OUTPUT_DOCX}")
     
-    print(f"[+] Copying document to Desktop: {DESKTOP_DOCX}")
-    try:
-        shutil.copy(OUTPUT_DOCX, DESKTOP_DOCX)
-        print(f"[OK] Master document successfully placed on Desktop: {DESKTOP_DOCX}")
-        final_desktop_path = DESKTOP_DOCX
-    except PermissionError:
-        alt_desktop = os.path.join(DESKTOP_DIR, "IFRDSS_Final_Student_Project_Report.docx")
-        shutil.copy(OUTPUT_DOCX, alt_desktop)
-        print(f"[NOTE] The file '{DESKTOP_DOCX}' is currently open in Microsoft Word.")
-        print(f"[OK] Saved latest version as: {alt_desktop}")
-        final_desktop_path = alt_desktop
+    desktop_targets = [
+        os.path.join(DESKTOP_DIR, "IFRDSS_Final_Student_Project_Report.docx"),
+        os.path.join(DESKTOP_DIR, "IFRDSS_Student_Project_Report.docx"),
+        os.path.join(DESKTOP_DIR, "IFRDSS_Formal_Project_Report.docx")
+    ]
+    saved_paths = []
+    for dt in desktop_targets:
+        try:
+            shutil.copy(OUTPUT_DOCX, dt)
+            print(f"[OK] Saved on Desktop: {dt}")
+            saved_paths.append(dt)
+        except PermissionError:
+            print(f"[NOTE] '{dt}' is currently open in Word (locked).")
     
     size_mb = os.path.getsize(OUTPUT_DOCX) / (1024 * 1024)
     print(f"[SUCCESS] Total Document Size: {size_mb:.2f} MB")
-    print(f"[READY] Upload file: {final_desktop_path}")
+    if saved_paths:
+        print(f"[READY] Primary Upload File: {saved_paths[0]}")
 
 if __name__ == "__main__":
     generate_formal_report()
